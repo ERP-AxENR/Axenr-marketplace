@@ -1,0 +1,132 @@
+---
+description: Lance axenr-bi-architect pour construire requetes SQL + dashboards Superset sur la base Axelor. Detecte le client AxENR depuis le cwd, produit SQL + Superset config + layout dashboard. Read-only projet, livrables dans ~/Downloads.
+argument-hint: <besoin-BI> [| fichier-optionnel]
+---
+
+# /axenr-data:bi-architect
+
+Architecte BI senior pour la stack Axelor/AxENR + Apache Superset. Produit des requetes SQL PostgreSQL pretes + la configuration Superset associee + le layout dashboard, a partir d'un besoin metier exprime en langage naturel.
+
+Detecte automatiquement le client AxENR depuis le `cwd` (planeteenr-app / systeko-app / emeraude-solaire-app / axenr-app / etc.) pour adapter les filtres `company_id`, les champs `attrs` custom et les conventions du client.
+
+## USAGE
+
+### Sans fichier (mode conseil + generation)
+
+```
+/axenr-data:bi-architect CA par commercial sur les 12 derniers mois
+/axenr-data:bi-architect pipeline commercial par etape avec montant pondere
+/axenr-data:bi-architect marge par affaire (CA - achats - main d'oeuvre)
+/axenr-data:bi-architect delai moyen depot DP vers obtention DP par gestionnaire reseau
+/axenr-data:bi-architect puissance installee cumulee par mois depuis 2024
+/axenr-data:bi-architect top 10 clients par CA signe cette annee
+/axenr-data:bi-architect rotation de stock par produit sur 6 mois
+/axenr-data:bi-architect pourquoi mon dashboard affiche plus d'affaires qu'il n'y en a en realite
+```
+
+### Avec fichier (analyse / diagnostic)
+
+```
+/axenr-data:bi-architect analyse ce dataset | ~/Downloads/export-superset.csv
+/axenr-data:bi-architect pourquoi cette requete est lente | ~/Downloads/ma-requete.sql
+/axenr-data:bi-architect ameliore ce dashboard | ~/Downloads/dashboard-screenshot.png
+```
+
+## DETECTION DU CLIENT
+
+L'agent deduit le client depuis le `cwd` :
+
+| cwd | Client | `company_id` typique |
+|-----|--------|---------------------|
+| `~/Desktop/Projects/planeteenr-app` | Planete ENR | pilote BI AxENR |
+| `~/Desktop/Projects/systeko-app` | Systeko | a parametrer |
+| `~/Desktop/Projects/emeraude-solaire-app` | Emeraude Solaire | 101 |
+| `~/Desktop/Projects/axenr-app` | AxENR (dev interne) | - |
+| `~/Desktop/Projects/synambu` | Synambu | - |
+| `~/Desktop/Projects/energ-ia` | Energ-IA | - |
+| `~/Desktop/Projects/yooz` | Yooz | - |
+| autre | demande explicite | - |
+
+L'agent applique les filtres `company_id` et les champs `attrs` JSON propres au client detecte.
+
+Lance depuis le dossier du client pour beneficier de la detection automatique :
+
+```bash
+cd ~/Desktop/Projects/planeteenr-app
+/axenr-data:bi-architect CA mensuel avec comparaison N-1
+```
+
+## ETAPES
+
+### Etape 1 : Detection client
+
+Appel a `client-context-detector`. Banner de confirmation.
+
+### Etape 2 : Chargement des ressources
+
+- Skill `bi-templates-catalog` (10 templates SQL + KPIs + Superset best practices)
+- Meta-modele Axelor : `~/Downloads/export-12026303288952708643.xlsx` (940 tables, 21 815 champs) pour resolution ad-hoc de champs
+- Projet client (READ-ONLY) : lecture des extensions / champs custom `attrs` documentes si accessibles
+
+### Etape 3 : Deleguer a l'agent
+
+```
+subagent_type: axenr-bi-architect
+prompt: |
+  Besoin : <besoin-parse>
+  Client : <detecte>
+  Project path : <chemin client>
+  Fichier auxiliaire : <csv / sql / image ou "aucun">
+  Output dir : ~/Downloads/
+
+  Applique ta methodologie complete (5 etapes apres PHASE 0).
+  Format de reponse obligatoire : 5 sections (Comprehension, Tables, SQL, Superset, Hypotheses).
+  Respecter strictement les conventions Axelor et les bonnes pratiques BI.
+```
+
+### Etape 4 : Presenter le livrable
+
+L'agent retourne :
+- Comprehension du besoin reformule
+- Diagramme des tables concernees (Mermaid si > 2 tables)
+- Requete SQL complete avec CTE commentees
+- Configuration Superset (dataset, metriques, dimensions, filtres, charts recommandes, layout)
+- Hypotheses et limites
+
+### Etape 5 : Proposer les suivis
+
+```
+Actions disponibles :
+1. Creer les index PostgreSQL recommandes pour optimiser
+2. Convertir le dataset en Materialized View si volumetrie importante
+3. Generer le JSON d'import Superset (Charts + Dashboard)
+4. Produire la documentation du dashboard pour la direction
+5. Iterer sur un aspect (ajouter un filtre, changer la granularite, ajouter une dimension)
+```
+
+## TYPES DE SORTIES SUPPORTES
+
+L'agent peut produire selon le besoin :
+
+- Analyse de dataset (mode exploration sur un CSV fourni)
+- Recommandation de graphique (mode conseil rapide)
+- Configuration Superset complete (mode executif)
+- Structure de dashboard (layout detaille)
+- Requete SQL commentee (mode developpement)
+- Diagnostic de donnees (mode debug : probleme + requete cible + cause + correction)
+
+## LIVRABLES (DANS `~/Downloads/`)
+
+- `<nom-dashboard>-query.sql` : requete SQL commentee
+- `<nom-dashboard>-superset-config.md` : configuration Superset (metriques, charts, layout)
+- `<nom-dashboard>-doc.md` : documentation KPI + hypotheses + responsables
+- Optionnel : `<nom-dashboard>-import.json` pour import direct dans Superset
+
+## GARDE-FOUS
+
+- READ-ONLY sur le projet client (pas d'ecriture, pas de commit, pas de push)
+- Aucune modification du code Axelor
+- Filtrage `archived IS NOT TRUE` + `company_id` systematique dans les SQL generees
+- Pas de `SELECT *`, pas de `company_id` hardcode
+- KPI sans cible -> l'agent questionne ("quelle cible voulez-vous afficher ?")
+- NO EMOJIS (regle AxENR)

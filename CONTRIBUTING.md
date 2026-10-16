@@ -1,148 +1,99 @@
 # Contributing to AxENR Marketplace
 
-Guide pour ajouter de nouveaux agents, skills et commands au marketplace.
+Guide pour ajouter des skills, agents et commandes. Avant tout ajout, lire
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) : chaque composant va dans la
+famille de son utilisateur (socle, technique, fonctionnel, support, client).
+
+Pour une simple amelioration d'un skill existant, pas besoin de ce guide :
+dire « Note-le pour le skill » a Claude, la fiche sera integree le vendredi.
 
 ---
 
-## Ajouter un Agent
+## Ajouter un Skill (cas par defaut)
 
-### 1. Creer le fichier
+### 1. Choisir le plugin
+
+Arbre de decision dans `docs/ARCHITECTURE.md`, section « Ou ranger un nouveau
+composant ». Un contenu propre a un client va dans `plugins/client-<nom>/`.
+
+### 2. Creer le dossier
 
 ```bash
-plugins/axenr/agents/<nom-agent>.md
+mkdir -p plugins/<plugin>/skills/<nom-skill>
+$EDITOR plugins/<plugin>/skills/<nom-skill>/SKILL.md
 ```
 
-### 2. Structure du fichier
+Le fichier s'appelle **toujours** `SKILL.md`. Sinon le skill n'est jamais charge.
+
+### 3. Frontmatter
 
 ```markdown
+---
+name: <nom-skill>
+description: >
+  Ce que fait le skill, quand le charger. Declencheurs : « ... », « ... ».
+  PAS pour : <cas voisins> (<autre-skill>).
+metadata:
+  owner: axenr
+---
+```
+
+- `name` = nom du dossier, kebab-case anglais, 64 caracteres maximum.
+- `description` : 1024 caracteres maximum.
+- Cles autorisees uniquement : `name`, `description`, `license`, `compatibility`,
+  `metadata`, `allowed-tools`. Toute autre information va sous `metadata`.
+
+### 4. Fichiers d'appui
+
+`references/` (documentation longue), `scripts/` (code), `resources/`
+(exemples). Le `SKILL.md` reste court et renvoie vers eux.
+
+---
+
+## Ajouter un Agent (Claude Code uniquement)
+
+Un agent ne fonctionne pas dans claude.ai ni Cowork. Ne creer un agent que pour
+une tache autonome en plusieurs etapes ; sinon, faire un skill.
+
+```bash
+plugins/<plugin>/agents/<nom-agent>.md
+```
+
+```markdown
+---
+name: <nom-agent>
+description: MUST BE USED pour ... Declencheurs ...
+---
+
 # <Nom Agent>
 
-> Description courte
-
 ## ROLE
-Explication du role de l'agent.
-
 ## INPUTS
-| Input | Format |
-|-------|--------|
-| ... | ... |
-
 ## WORKFLOW
-### PHASE 1 : ...
-### PHASE 2 : ...
-
 ## CRITICAL RULES
-- Regle 1
-- Regle 2
 ```
 
-### 3. Enregistrer dans plugin.json
-
-Editer `plugins/axenr/.claude-plugin/plugin.json` :
-
-```json
-{
-  "agents": [
-    { "name": "existing-agent", "source": "agents/existing-agent.md" },
-    { "name": "new-agent", "source": "agents/new-agent.md" }
-  ]
-}
-```
-
-### 4. Incrementer la version
-
-Dans `plugins/axenr/.claude-plugin/plugin.json` ET `.claude-plugin/marketplace.json` :
-
-```json
-"version": "1.1.0"
-```
+Les exemples et ressources de l'agent vont dans `plugins/<plugin>/resources/`,
+jamais dans un sous-dossier de `agents/` (ils seraient charges comme agents).
 
 ---
 
-## Ajouter un Skill
-
-### 1. Creer le dossier et fichier
+## Ajouter une Commande
 
 ```bash
-mkdir plugins/axenr/skills/<nom-skill>
-touch plugins/axenr/skills/<nom-skill>/<nom-skill>.md
+plugins/<plugin>/commands/<nom-command>.md
 ```
 
-### 2. Structure du fichier
-
-```markdown
-# <Nom Skill>
-
-> Description courte
-
-## ROLE
-Explication du role du skill.
-
-## INPUTS
-| Input | Format |
-|-------|--------|
-
-## OUTPUTS
-| Output | Format |
-|--------|--------|
-
-## LOGIQUE
-1. Etape 1
-2. Etape 2
-
-## EXEMPLES
-### Cas 1
-```
-
-### 3. Enregistrer dans plugin.json
-
-```json
-{
-  "skills": [
-    { "name": "new-skill", "source": "skills/new-skill/new-skill.md" }
-  ]
-}
-```
+Elle s'appelle ensuite `/<plugin>:<nom-command>`.
 
 ---
 
-## Ajouter une Command
+## Ajouter un Plugin
 
-### 1. Creer le fichier
-
-```bash
-plugins/axenr/commands/<nom-command>.md
-```
-
-### 2. Structure du fichier
-
-```markdown
-Description de ce que fait la commande.
-
-## ARGUMENTS
-
-$ARGUMENTS
-
-Explication du format des arguments.
-
-## WORKFLOW
-
-### STEP 1 : ...
-### STEP 2 : ...
-
-## CRITICAL RULES
-- ...
-```
-
-### 3. Enregistrer dans plugin.json
-
-```json
-{
-  "commands": [
-    { "name": "new-command", "source": "commands/new-command.md" }
-  ]
-}
-```
+1. `plugins/<plugin>/.claude-plugin/plugin.json` (name, version courante, description, author).
+2. Declaration dans `.claude-plugin/marketplace.json` avec `category` :
+   `socle`, `technique`, `fonctionnel` ou `support`.
+3. Mise a jour de `docs/ARCHITECTURE.md` et de `.github/CODEOWNERS`.
 
 ---
 
@@ -150,28 +101,16 @@ Explication du format des arguments.
 
 | Element | Convention |
 |---------|------------|
-| Noms de fichiers | kebab-case |
-| Noms d'agents | kebab-case dans plugin.json |
+| Noms de fichiers et de composants | kebab-case, anglais |
 | Documentation | Francais pour user-facing, anglais pour code |
-| Code technique | ENGLISH ONLY |
-| Commits | Conventional commits en anglais |
-| Pas d'emojis | Nulle part dans les fichiers |
-
-## Commits
-
-```bash
-feat(agent): add new-agent for X functionality
-feat(skill): add new-skill for Y detection
-feat(command): add /axenr:new-command
-fix(agent): correct ticket-solver retry logic
-docs: update README with new command usage
-```
+| Commits | Conventional commits : `feat(<plugin>): ...`, `fix(<plugin>): ...` |
+| Emojis | Interdits partout |
+| Secrets | Interdits : variables d'environnement uniquement |
 
 ## Checklist avant PR
 
-- [ ] Fichier .md cree avec structure correcte
-- [ ] Enregistre dans plugin.json
-- [ ] Version incrementee dans plugin.json ET marketplace.json
-- [ ] Pas d'emojis
-- [ ] Noms techniques en anglais
-- [ ] Teste localement avec `claude plugin add`
+- [ ] Composant range dans la bonne famille et le bon plugin
+- [ ] Skill : fichier `SKILL.md`, frontmatter conforme
+- [ ] `python3 scripts/marketplace-doctor.py` sans CRITICAL
+- [ ] `./scripts/bump-version.sh auto` lance
+- [ ] Teste localement dans Claude Code

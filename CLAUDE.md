@@ -5,70 +5,71 @@
 
 ---
 
-## ARCHITECTURE
+## ARCHITECTURE (v2)
+
+Une marketplace, plusieurs plugins par domaine. Detail complet, regles de
+rangement et feuille de route : `docs/ARCHITECTURE.md`.
 
 ```
 axenr-marketplace/
-├── .claude-plugin/
-│   └── marketplace.json              # Registre central (version source of truth)
-├── plugins/
-│   ├── axenr/                        # Plugin AxENR (nos agents maison)
-│   │   ├── agents/                   # Agents autonomes AxENR
-│   │   ├── skills/                   # Skills specialises AxENR
-│   │   ├── commands/                 # Slash commands AxENR
-│   │   ├── docs/lessons/             # LESSONS-LEARNED.md (memoire)
-│   │   └── templates/                # Templates de sortie
-├── docs/                             # Documentation marketplace
-├── README.md                         # Installation et usage
-└── CONTRIBUTING.md                   # Guide ajout d'agents
+├── .claude-plugin/marketplace.json   # Catalogue (version AxENR unique, source of truth)
+├── .github/workflows/                # ci.yml (doctor, bump, emojis) + release.yml (auto-bump)
+├── CODEOWNERS
+├── docs/ARCHITECTURE.md
+├── scripts/                          # bump-version.sh, marketplace-doctor.py
+└── plugins/
+    ├── axenr-core/                   # [socle] Pour tous : consultant ENR, client-context, notes d'amelioration
+    ├── axenr-erp/                    # [fonctionnel] ERP : baremes
+    ├── axenr-gmao/                   # [fonctionnel] GMAO : capacites reelles de la solution
+    ├── axenr-data/                   # [fonctionnel] Import/export, templates XDocReport, BI Superset
+    ├── axenr-permissions/            # [fonctionnel] Droits et permissions
+    ├── axenr-dev/                    # [technique] Claude Code : ticket-solver, PR review, lecons, outillage
+    └── axelor/                       # [technique] Partenaire Axelor (ne pas modifier)
 ```
 
-## AGENTS DISPONIBLES
+## COMPOSANTS AXENR
 
-### Agents AxENR (plugins/axenr/) - nos agents maison
+| Composant | Type | Plugin | Role |
+|-----------|------|--------|------|
+| erp-consultant-enr | agent | axenr-core | Consultant ERP senior ENR - challenge genericite, temporalite, reutilisabilite |
+| enr-coherence-checker | skill | axenr-core | Valide la coherence ENR (generique tous types, cycle commercial) |
+| client-context-detector | skill | axenr-core | Detecte le client AxENR depuis le cwd et charge ses ressources |
+| skill-improvement-note | skill | axenr-core | « Note-le pour le skill » : fiche d'amelioration -> ticket Jira AxENR MARKETPLACE |
+| axenr-bareme-expert | agent | axenr-erp | Baremes tarifaires Axelor (moteur Pricing) |
+| bareme-pricing-catalog | skill | axenr-erp | Catalogue de reference du moteur Pricing |
+| gmao-capabilities | skill | axenr-gmao | Capacites reelles GMAO : standard / parametrage / roadmap / specifique |
+| import-export-agent | agent | axenr-data | Expert import/export Axelor (read-only projet) |
+| import-schema-catalog | skill | axenr-data | Schemas d'import Axelor (10 feuilles fournisseurs, FRA_PCG) |
+| axenr-template-expert | agent | axenr-data | Templates Word XDocReport (.docx prets a l'import) |
+| template-expert-catalog | skill | axenr-data | Patterns XDocReport, pieges, champs |
+| axenr-bi-architect | agent | axenr-data | Requetes SQL PostgreSQL + dashboards Superset |
+| bi-templates-catalog | skill | axenr-data | 10 templates SQL, KPIs, modele de donnees |
+| axelor-droits-expert | skill | axenr-permissions | Matrice de droits, import, audit, diagnostic |
+| ticket-solver-agent | agent | axenr-dev | Resolution autonome de tickets avec auto-apprentissage |
+| pr-reviewer-axenr | agent | axenr-dev | Review PR (axelor:code-reviewer + checks AxENR) |
+| axenr-montee-version | agent | axenr-dev | Montee de version des patchs AOS/AOP |
+| error-learner, lesson-deduplicator, knowledge-updater, pre-flight-checker | skills | axenr-dev | Systeme de lecons (curator model) |
+| axenr-dev-validator, migration-validator | skills | axenr-dev | Validations dev et migrations |
+| marketplace-doctor | skill | axenr-dev | Audit de sante de la marketplace |
+| weekly-skill-integration | skill | axenr-dev | « Integre les notes de la semaine » : fiches Jira -> PR hebdomadaire |
 
-| Agent | Role |
-|-------|------|
-| ticket-solver-agent | Resolution autonome de tickets avec auto-apprentissage |
-| erp-consultant-enr | Consultant ERP senior ENR - Challenge et valide la coherence metier (genericite, temporalite, reutilisabilite) |
-| pr-reviewer-axenr | Review PR AxENR : delegue a axelor:code-reviewer + checks specifiques (branding, submodule, lecons apprises, no-emoji, no-comment) |
-| import-export-agent | Expert 100% import/export Axelor - Read-only sur le projet, produit Excel/CSV/guides dans ~/Downloads. Modes prepare / core-model / company-create / debug |
-| axenr-template-expert | Expert senior templates Word XDocReport pour Axelor/AxENR (contrats, attestations, mandats Enedis/GRD, fiches collecte, CARD-I). Livre .docx prets a l'import Axelor dans ~/Downloads |
-| axenr-bi-architect | Architecte BI senior pour Axelor/AxENR + Apache Superset. Requetes SQL PostgreSQL + dashboards. 940 tables, 21 815 champs. KPIs commercial/financier/operationnel/ENR. Detecte le client courant via cwd |
-
-### Skills AxENR (plugins/axenr/skills/)
-
-| Skill | Role |
-|-------|------|
-| error-learner | Analyse les erreurs, delegue a lesson-deduplicator, cree/incremente les lecons |
-| lesson-deduplicator | Matching semantique multi-axes (rule_id, signature, Levenshtein, keywords) pour eviter les doublons de lecons |
-| knowledge-updater | Promeut les lecons confirmees (3+ occurrences) dans CLAUDE.md du projet |
-| pre-flight-checker | Charge les lecons pertinentes avant chaque generation de code |
-| enr-coherence-checker | Valide la coherence ENR : generique tous types, temporel cycle commercial, reutilisabilite, anti-patterns |
-| axenr-dev-validator | Valide les regles dev AxENR : 8 regles d'or, domains, views, actions, Java, i18n, extensions, git |
-| migration-validator | Valide les migrations de donnees/schemas |
-| marketplace-doctor | Audite la sante du marketplace (versions sync, frontmatters, refs, doublons, lecons stagnantes) |
-| import-schema-catalog | Catalogue de reference des schemas d'import Axelor (10 feuilles fournisseurs, AccountType FRA_PCG, conventions chart-config.xml) |
-| template-expert-catalog | Catalogue de reference pour axenr-template-expert (patterns XDocReport, pieges, modeles racines, 77 champs + 39 techniques, contournement Groovy 3+ niveaux) |
-| client-context-detector | Detecte le client AxENR depuis le cwd (axenr-app / systeko-app / planeteenr-app / emeraude-solaire-app / synambu / energ-ia / yooz) et charge les ressources specifiques |
-| bi-templates-catalog | Catalogue BI pour axenr-bi-architect (10 templates SQL pretes, KPIs strategique/tactique/operationnel/ENR, bonnes pratiques Superset, modele de donnees Axelor detaille par domaine) |
-| axelor-droits-expert | Expert des regles de droit Axelor : conception de matrice, mutualisation des roles entre groupes, generation du fichier d'import, audit et diagnostic des refus d'acces. 10 regles d'or sourcees sur le code AOP |
-
-### Commands AxENR (plugins/axenr/commands/)
+### Commandes
 
 | Commande | Usage |
 |----------|-------|
-| /axenr:solve-ticket | Resoudre 1 ticket autonomement |
-| /axenr:solve-batch | Resoudre 2 tickets en parallele |
-| /axenr:learn-review | Auditer et consolider les lecons (legacy, utiliser /axenr:consolidate-lessons) |
-| /axenr:review-pr | Review une PR avec pr-reviewer-axenr + axelor:code-reviewer partenaire |
-| /axenr:doctor | Audit de sante du marketplace |
-| /axenr:consolidate-lessons | Fusionne les lecons dupliquees, depile REVIEW QUEUE, declenche les promotions |
-| /axenr:sync-lessons | Curator model : pousse les LOCAL-LESSONS-<hostname>.md vers LESSONS-LEARNED.md via PR |
-| /axenr:bump-version | Bump version synchronise marketplace.json + plugin.json (patch/minor/major/auto) |
-| /axenr:import-help | Lance import-export-agent pour preparer/corriger un import Axelor (read-only projet, outputs dans ~/Downloads) |
-| /axenr:template-expert | Lance axenr-template-expert pour creer/modifier/debuger un template Word XDocReport (read-only projet, .docx dans ~/Downloads) |
-| /axenr:bi-architect | Lance axenr-bi-architect pour construire requetes SQL + dashboards Superset (read-only projet, SQL/MD dans ~/Downloads) |
+| /axenr-dev:solve-ticket | Resoudre 1 ticket autonomement |
+| /axenr-dev:solve-batch | Resoudre 2 tickets en parallele |
+| /axenr-dev:review-pr | Review une PR avec pr-reviewer-axenr + axelor:code-reviewer partenaire |
+| /axenr-dev:doctor | Audit de sante du marketplace |
+| /axenr-dev:consolidate-lessons | Fusionne les lecons dupliquees, depile REVIEW QUEUE, declenche les promotions |
+| /axenr-dev:sync-lessons | Curator model : pousse les LOCAL-LESSONS-<hostname>.md vers LESSONS-LEARNED.md via PR |
+| /axenr-dev:bump-version | Bump de la version AxENR unique (patch/minor/major/auto) |
+| /axenr-dev:montee-version | Montee de version AOS/AOP |
+| /axenr-dev:learn-review | Legacy, utiliser /axenr-dev:consolidate-lessons |
+| /axenr-data:import-help | Lance import-export-agent (read-only projet, outputs dans ~/Downloads) |
+| /axenr-data:template-expert | Lance axenr-template-expert (.docx dans ~/Downloads) |
+| /axenr-data:bi-architect | Lance axenr-bi-architect (SQL/MD dans ~/Downloads) |
+| /axenr-erp:bareme | Lance axenr-bareme-expert |
 
 ### Agents Axelor Partenaire (plugins/axelor/) - v2.5.0
 
@@ -125,7 +126,7 @@ us-quality-validator, ci-validation-script-generator, etc.
 
 ## MODELE DE LECONS PARTAGEES (Curator Model - Option A)
 
-Deux fichiers coexistent dans `plugins/axenr/docs/lessons/` :
+Deux fichiers coexistent dans `plugins/axenr-dev/docs/lessons/` :
 
 | Fichier | Scope | Git |
 |---------|-------|-----|
@@ -142,7 +143,7 @@ Deux fichiers coexistent dans `plugins/axenr/docs/lessons/` :
    -> le dev beneficie immediatement de ses propres lecons
 
 3. Periodiquement (ou sur demande) :
-   /axenr:sync-lessons [--dry-run] [--auto-pr]
+   /axenr-dev:sync-lessons [--dry-run] [--auto-pr]
    -> applique lesson-deduplicator contre SHARED
    -> fusionne / ajoute
    -> ouvre une PR sur une branche lessons/sync-<hostname>-YYYYMMDD
@@ -176,48 +177,50 @@ Source : Axelor AI Team (`git@git.axelor.com:ia-tools/axelor-claude-marketplace.
 
 ## VERSIONING ET AUTO-UPDATE
 
-Les 2 fichiers suivants DOIVENT etre synchronises :
-- `.claude-plugin/marketplace.json` → version du marketplace
-- `plugins/axenr/.claude-plugin/plugin.json` → version du plugin
+Version AxENR unique : `.claude-plugin/marketplace.json` (champ `version` et
+version de chaque plugin AxENR) et tous les `plugins/axenr-*/.claude-plugin/plugin.json`
+portent le meme numero. Le plugin partenaire `axelor` garde sa propre version.
 
 ### Trois facons de bumper
 
 1. Automatique via GitHub Action (recommande) :
-   A chaque push sur main avec des modifs dans plugins/axenr/, le workflow
-   `.github/workflows/release.yml` :
+   A chaque push sur main avec des modifs dans `plugins/` (hors `plugins/axelor/`),
+   le workflow `.github/workflows/release.yml` :
    - detecte le type de bump via conventional commits (feat=minor, fix=patch, BREAKING=major)
-   - bumpe marketplace.json + plugin.json
-   - commit "chore(release): bump axenr plugin to vX.Y.Z"
+   - bumpe marketplace.json + tous les plugin.json AxENR
+   - commit "chore(release): bump axenr plugins to vX.Y.Z"
    - tag vX.Y.Z
    - cree une GitHub Release
 
 2. Commande Claude Code :
-   `/axenr:bump-version [patch|minor|major|auto]`
+   `/axenr-dev:bump-version [patch|minor|major|auto]`
 
 3. Script local :
    `./scripts/bump-version.sh [patch|minor|major|auto]`
 
 ### CI de garde-fou
 
-`.github/workflows/ci.yml` refuse tout PR qui modifie `plugins/axenr/` sans
-bumper la version. Plus d'oubli silencieux.
+`.github/workflows/ci.yml` refuse tout PR qui modifie `plugins/` (hors partenaire)
+sans bumper `marketplace.json`, et lance le doctor.
 
-### Cote utilisateur (mise a jour du plugin)
+### Cote utilisateur (mise a jour des plugins)
 
-Apres un bump + push :
+Apres un merge :
 ```
 /plugin marketplace update fbe-axenr-Axenr-marketplace
-/plugin update axenr@fbe-axenr-Axenr-marketplace
+/plugin update --all
 ```
+Cote claude.ai et Cowork : synchronisation automatique depuis GitHub, rien a faire.
 
 ### Marketplace Doctor
 
-`/axenr:doctor` ou `python3 scripts/marketplace-doctor.py --strict` verifie :
-- sync des versions
-- frontmatters valides (name, description)
-- references agents/skills/commands coherentes
-- pas de doublon de nom
-- pas d'emoji (regle AxENR)
+`/axenr-dev:doctor` ou `python3 scripts/marketplace-doctor.py [--strict]` verifie :
+- sync des versions, JSON valides, plugins declares
+- famille declaree pour chaque plugin (socle / technique / fonctionnel / support)
+- skills : fichier `SKILL.md`, name = dossier, description <= 1024 caracteres,
+  frontmatter limite aux cles acceptees par claude.ai
+- aucun secret (jetons, cles, URL avec identifiants)
+- pas de doublon de nom, pas d'emoji, pas de ressource rangee sous agents/
 - lecons stagnantes (>30 jours)
 
 ## REGLES
@@ -226,5 +229,9 @@ Apres un bump + push :
 2. ENGLISH ONLY for technical names
 3. Documentation in French (user-facing) or English (code-facing)
 4. Conventional commits for this repo
-5. Ne jamais modifier les agents du partenaire (plugins/axelor/) - les surcharger dans axenr/
+5. Ne jamais modifier les agents du partenaire (plugins/axelor/) - les surcharger dans un plugin axenr-*
 6. Toujours incrementer la version apres ajout d'un composant
+7. Ranger chaque composant dans la famille de son utilisateur (voir docs/ARCHITECTURE.md) :
+   technique = developpeurs, fonctionnel = consultants, support = pilotage et marketing
+8. Le contenu propre a un client va dans un plugin client-<nom>, jamais dans axenr-*
+9. On ne modifie jamais un skill dans claude.ai : toute modification passe par une PR

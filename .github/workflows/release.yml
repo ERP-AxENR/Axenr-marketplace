@@ -37,18 +37,23 @@ jobs:
           fi
 
           PLUGIN_CHANGED=$(git diff --name-only $RANGE -- \
-            'plugins/axenr/agents/' \
-            'plugins/axenr/skills/' \
-            'plugins/axenr/commands/' \
-            'plugins/axenr/templates/' \
+            'plugins/' \
+            ':(exclude)plugins/axelor/' \
+            ':(exclude)plugins/*/.claude-plugin/plugin.json' \
             | wc -l)
 
           echo "range=$RANGE" >> $GITHUB_OUTPUT
+          echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
           echo "plugin_changed=$PLUGIN_CHANGED" >> $GITHUB_OUTPUT
 
-      - name: Bump version
+      - name: Bump version (only if the PR did not bump it already)
         if: steps.changes.outputs.plugin_changed != '0'
         run: |
+          CURRENT="v$(jq -r '.version' .claude-plugin/marketplace.json)"
+          if [ "$CURRENT" != "${{ steps.changes.outputs.last_tag }}" ]; then
+            echo "Version already bumped in the PR ($CURRENT): no second bump."
+            exit 0
+          fi
           chmod +x scripts/bump-version.sh
           ./scripts/bump-version.sh auto
 
@@ -56,10 +61,12 @@ jobs:
         if: steps.changes.outputs.plugin_changed != '0'
         run: |
           NEW_VERSION=$(jq -r '.version' .claude-plugin/marketplace.json)
-          git add .claude-plugin/marketplace.json plugins/axenr/.claude-plugin/plugin.json
-          git commit -m "chore(release): bump axenr plugin to v${NEW_VERSION}"
+          git add .claude-plugin/marketplace.json plugins/*/.claude-plugin/plugin.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(release): bump axenr plugins to v${NEW_VERSION}"
+            git push origin main
+          fi
           git tag -a "v${NEW_VERSION}" -m "v${NEW_VERSION}"
-          git push origin main
           git push origin "v${NEW_VERSION}"
 
       - name: Create GitHub Release

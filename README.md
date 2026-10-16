@@ -1,63 +1,77 @@
 # AxENR Marketplace
 
-Marketplace interne d'agents auto-apprenants pour le developpement Axelor ERP et React Native mobile.
+Marketplace interne AxENR : la methode metier ENR, ERP et GMAO d'AxENR,
+partagee entre les consultants (claude.ai, Cowork) et les developpeurs
+(Claude Code). Architecture, regles de rangement et feuille de route :
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-**Author** : Fadel Benomar - Developer Backend & IA @ AxENR
+**Mainteneur** : Fadel Benomar - Developer Backend & IA @ AxENR
 
 ---
 
-## Installation
+## Je suis...
 
-### 1. Ajouter le marketplace dans Claude Code
+| Profil | Ce que j'utilise | Plugins |
+|---|---|---|
+| Developpeur | Claude Code | `axenr-core`, `axenr-dev`, `axelor` (+ plugins fonctionnels au besoin) |
+| Consultant ERP / GMAO | claude.ai, Cowork | `axenr-core`, `axenr-erp`, `axenr-gmao`, `axenr-data`, `axenr-permissions` |
+| Pilotage, chef de projet, marketing | claude.ai, Cowork | `axenr-core` (+ plugins support a venir) |
+
+Sur claude.ai et Cowork, les plugins arrivent par la synchronisation de
+l'organisation : rien a installer. La suite de ce README concerne Claude Code.
+
+## Installation (Claude Code)
 
 ```
 /plugin marketplace add fbe-axenr/Axenr-marketplace
+/plugin install axenr-core@fbe-axenr-Axenr-marketplace
+/plugin install axenr-dev@fbe-axenr-Axenr-marketplace
 ```
 
-### 2. Installer le plugin
+Puis `/plugin`, onglet **Installed**, pour verifier.
 
-```
-/plugin install axenr@fbe-axenr-Axenr-marketplace
-```
+Depuis la v1 (plugin unique `axenr`) : voir la section « Migration depuis la
+v1 » de [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-### 3. Verifier
+## Commandes
 
-```
-/plugin
-```
-
-Aller sur l'onglet **Installed** pour confirmer.
-
-## Commandes disponibles
+### Technique (`axenr-dev`)
 
 | Commande | Description |
 |----------|-------------|
-| `/axenr:solve-ticket` | Resoudre 1 ticket autonomement |
-| `/axenr:solve-batch` | Resoudre 2 tickets en parallele |
-| `/axenr:review-pr <url\|#N>` | Review PR AxENR (axelor:code-reviewer + checks specifiques AxENR) |
-| `/axenr:doctor` | Audit de sante du marketplace |
-| `/axenr:consolidate-lessons` | Fusionne lecons dupliquees et promeut celles a 3+ occurrences |
-| `/axenr:bump-version` | Bump synchronise marketplace.json + plugin.json |
-| `/axenr:learn-review` | Legacy - utiliser consolidate-lessons |
+| `/axenr-dev:solve-ticket` | Resoudre 1 ticket autonomement |
+| `/axenr-dev:solve-batch` | Resoudre 2 tickets en parallele |
+| `/axenr-dev:review-pr <url\|#N>` | Review PR AxENR (axelor:code-reviewer + checks specifiques AxENR) |
+| `/axenr-dev:montee-version <version>` | Montee de version AOS/AOP |
+| `/axenr-dev:doctor` | Audit de sante de la marketplace |
+| `/axenr-dev:consolidate-lessons` | Fusionne les lecons dupliquees et promeut celles a 3+ occurrences |
+| `/axenr-dev:sync-lessons` | Pousse les lecons locales vers le fichier partage via PR |
+| `/axenr-dev:bump-version` | Bump de la version AxENR unique |
 
-## Usage
+### Fonctionnel
 
-### Resoudre un ticket
+| Commande | Description |
+|----------|-------------|
+| `/axenr-data:import-help` | Preparer ou corriger un import Axelor |
+| `/axenr-data:template-expert` | Creer ou corriger un template Word XDocReport |
+| `/axenr-data:bi-architect` | Requetes SQL et dashboards Superset |
+| `/axenr-erp:bareme` | Concevoir un bareme tarifaire |
+
+## Ameliorer un skill : le process du vendredi
+
+1. Pendant la semaine, n'importe qui dit a Claude : **« Note-le pour le skill »**.
+   Claude cree une fiche dans le projet Jira AxENR MARKETPLACE.
+2. Le vendredi, le developpeur dit a Claude Code : **« Integre les notes de la semaine »**.
+   Claude Code met a jour les skills et ouvre une PR.
+3. Alexis relit et merge. La release et la synchronisation sont automatiques.
+
+On ne modifie jamais un skill directement dans claude.ai.
+
+## Usage du ticket-solver
 
 ```
-/axenr:solve-ticket axenr-app wip #750 | Add estimated power field | decimal field on Opportunity
-```
-
-### Resoudre 2 tickets en parallele
-
-```
-/axenr:solve-batch axenr-app wip #750|Add power field|decimal on Opportunity ,, #751|Add panel notes|notes panel on SaleOrder form
-```
-
-### Format des arguments
-
-```
-<project> <branch> #<number> | <title> | <description>
+/axenr-dev:solve-ticket axenr-app wip #750 | Add estimated power field | decimal field on Opportunity
+/axenr-dev:solve-batch axenr-app wip #750|Add power field|decimal on Opportunity ,, #751|Add panel notes|notes panel on SaleOrder form
 ```
 
 | Argument | Description | Exemples |
@@ -68,84 +82,35 @@ Aller sur l'onglet **Installed** pour confirmer.
 | title | Titre court | `Add estimated power field` |
 | description | Description detaillee | `decimal field on Opportunity, calculated from numberOfModules * 400 / 1000` |
 
-## Projets supportes
+## Auto-apprentissage (axenr-dev)
 
-| Projet | Techno | Branche par defaut |
-|--------|--------|--------------------|
-| axenr-app | Axelor AOP 7.4.7, Java 11 | dev, wip |
-| axenr-mobile | React Native 0.75.5, TypeScript | axenr |
-
-## Architecture
-
-```
-axenr-marketplace/
-├── plugins/
-│   └── axenr/                    # Agents maison AxENR
-│       ├── agents/               # ticket-solver-agent
-│       ├── skills/               # error-learner, knowledge-updater, pre-flight-checker
-│       ├── commands/             # solve-ticket, solve-batch, learn-review
-│       ├── docs/lessons/         # LESSONS-LEARNED.md (memoire)
-│       └── templates/            # Templates de sortie
-├── CLAUDE.md                     # Regles globales
-└── README.md
-```
-
-## Auto-apprentissage
-
-L'agent apprend de ses erreurs :
-
-1. **Detection** : L'agent valide son code avec les agents Axelor
-2. **Correction** : Il corrige les erreurs trouvees (max 3 retries)
-3. **Enregistrement** : Chaque erreur est enregistree dans `LESSONS-LEARNED.md` via error-learner
-4. **Promotion** : A 3 occurrences d'un pattern, knowledge-updater le promeut dans `CLAUDE.md`
-5. **Prevention** : Au prochain ticket, pre-flight-checker charge les lecons pertinentes
-
-## Agents partenaire (Axelor)
-
-Les agents du partenaire sont installes separement via leur propre marketplace :
-
-```
-/plugin marketplace add git@git.axelor.com:ia-tools/axelor-claude-marketplace.git
-/plugin install axelor
-```
-
-### Agents disponibles (18 agents, 32+ skills)
-
-Agents de generation : `domain-agent`, `view-agent`, `java-agent`, `test-agent`
-
-Agents de validation : `code-reviewer`, `code-analyzer`, `axelor-xml-validator`, `axelor-view-semantic-validator`, `axelor-java-style-validator`, `axelor-naming-checker`
+1. **Detection** : l'agent valide son code avec les agents Axelor
+2. **Correction** : il corrige les erreurs trouvees (max 3 retries)
+3. **Enregistrement** : chaque erreur est enregistree via error-learner
+4. **Promotion** : a 3 occurrences d'un pattern, knowledge-updater le promeut dans `CLAUDE.md`
+5. **Prevention** : au prochain ticket, pre-flight-checker charge les lecons pertinentes
 
 ## Mise a jour
 
-Dans Claude Code :
-
 ```
 /plugin marketplace update fbe-axenr-Axenr-marketplace
-/plugin update axenr@fbe-axenr-Axenr-marketplace
-```
-
-Ou d'un coup :
-
-```
 /plugin update --all
 ```
 
 ### Auto-release (cote mainteneur)
 
-A chaque push sur `main` avec modifs dans `plugins/axenr/`, le workflow
-`.github/workflows/release.yml` :
+A chaque push sur `main` qui modifie `plugins/` (hors partenaire `axelor`), le
+workflow `.github/workflows/release.yml` :
 
 1. Detecte le type de bump via conventional commits (`feat`=minor, `fix`=patch, `BREAKING`=major)
-2. Bumpe `marketplace.json` + `plugin.json` en sync
-3. Commit `chore(release): bump axenr plugin to vX.Y.Z`
+2. Bumpe `marketplace.json` et tous les `plugin.json` AxENR (version unique)
+3. Commit `chore(release): bump axenr plugins to vX.Y.Z`
 4. Tag et publie une GitHub Release
 
-Le workflow `.github/workflows/ci.yml` refuse tout PR qui touche `plugins/axenr/` sans bump.
-
-Bump manuel si besoin :
+`.github/workflows/ci.yml` lance le doctor et refuse toute PR qui touche
+`plugins/` sans bump de `marketplace.json`.
 
 ```
-/axenr:bump-version patch
-# ou en local
 ./scripts/bump-version.sh auto
+python3 scripts/marketplace-doctor.py
 ```
