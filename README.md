@@ -48,14 +48,13 @@ v1 » de [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | `/axenr-dev:sync-lessons` | Pousse les lecons locales vers le fichier partage via PR |
 | `/axenr-dev:bump-version` | Bump de la version AxENR unique |
 
-### Fonctionnel
+### Fonctionnel : pas de commande
 
-| Commande | Description |
-|----------|-------------|
-| `/axenr-data:import-help` | Preparer ou corriger un import Axelor |
-| `/axenr-data:template-expert` | Creer ou corriger un template Word XDocReport |
-| `/axenr-data:bi-architect` | Requetes SQL et dashboards Superset |
-| `/axenr-erp:bareme` | Concevoir un bareme tarifaire |
+Les plugins fonctionnels ne contiennent que des skills, utilisables a
+l'identique dans claude.ai, Cowork et Claude Code. On pose sa question en
+langage naturel (« prepare l'import des fournisseurs », « le champ de mon
+template ressort vide », « CA par commercial sur 12 mois ») et Claude choisit
+le skill. Dans Claude Code, `/<nom-du-skill>` force un skill precis.
 
 ## Ameliorer un skill : le process du vendredi
 

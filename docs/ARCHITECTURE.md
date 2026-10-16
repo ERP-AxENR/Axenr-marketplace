@@ -5,6 +5,17 @@ sont ranges par **famille d'utilisateurs**, pour que chacun ne voie que ce qui
 le concerne : un developpeur ne doit pas se perdre dans le marketing, un
 consultant ne doit pas tomber sur l'outillage Git.
 
+## Un depot, deux usages
+
+La marketplace vit sur GitHub et sert a la fois :
+- **claude.ai et Cowork** : Organization settings > Plugins & skills > Sync from
+  GitHub ; les skills des plugins arrivent automatiquement apres chaque merge ;
+- **Claude Code** : `/plugin marketplace add fbe-axenr/Axenr-marketplace`, puis
+  installation des plugins.
+
+Seuls les skills fonctionnent des deux cotes. D'ou la regle : hors famille
+technique, un plugin ne contient que des skills.
+
 ## Les quatre familles
 
 | Famille | Pour qui | Outil principal | Plugins |
@@ -22,12 +33,12 @@ La famille est declaree dans `.claude-plugin/marketplace.json` (champ
 
 | Plugin | Famille | Contenu |
 |---|---|---|
-| `axenr-core` | socle | Consultant ERP ENR, coherence ENR, detection du client, « Note-le pour le skill » |
-| `axenr-erp` | fonctionnel | Baremes et moteur Pricing |
+| `axenr-core` | socle | Coherence ENR, detection du client, « Note-le pour le skill » (consultant ENR en skill : a venir, fusion des 6 exemplaires) |
+| `axenr-erp` | fonctionnel | `axenr-bareme-expert` : baremes et moteur Pricing |
 | `axenr-gmao` | fonctionnel | Capacites reelles de la GMAO (standard, parametrage, roadmap, specifique) |
-| `axenr-data` | fonctionnel | Imports et exports, templates XDocReport, BI Superset |
+| `axenr-data` | fonctionnel | `axelor-import-export`, `axenr-template-expert`, `axenr-bi-architect` |
 | `axenr-permissions` | fonctionnel | Matrice de droits, import, audit, diagnostic |
-| `axenr-dev` | technique | Ticket-solver, revue de PR, montee de version, lecons, outillage de la marketplace, integration du vendredi |
+| `axenr-dev` | technique | Ticket-solver et son consultant ENR, revue de PR, montee de version, lecons, outillage de la marketplace, integration du vendredi |
 | `axelor` | technique | Plugin du partenaire Axelor, non modifie |
 
 ## Qui installe quoi
@@ -52,9 +63,12 @@ en plus `client-systeko`.
    - un chef de projet ou le marketing -> plugin support ;
    - tout le monde -> `axenr-core` (rare : a justifier).
 3. Skill ou agent ?
-   - **skill** par defaut : il fonctionne partout, y compris dans claude.ai et Cowork ;
-   - **agent** seulement pour une tache autonome en plusieurs etapes, dans Claude Code.
-     Les agents ne fonctionnent pas dans claude.ai.
+   - **skill**, toujours, hors famille technique : c'est le seul composant que
+     claude.ai et Cowork chargent depuis un plugin. Claude le choisit seul, d'apres
+     sa description : personne n'a d'agent ni de commande a appeler ;
+   - **agent ou commande** seulement dans `axenr-dev`, pour une tache autonome de
+     developpement dans Claude Code. Le doctor refuse un agent ou une commande
+     ailleurs.
 
 ## Regles de forme
 
@@ -99,6 +113,9 @@ Dans Claude Code :
 /plugin install axenr-dev@fbe-axenr-Axenr-marketplace
 ```
 
-Les commandes changent de prefixe : `/axenr:solve-ticket` devient
-`/axenr-dev:solve-ticket`, `/axenr:import-help` devient `/axenr-data:import-help`,
-`/axenr:bareme` devient `/axenr-erp:bareme`.
+Les commandes techniques changent de prefixe : `/axenr:solve-ticket` devient
+`/axenr-dev:solve-ticket`. Les commandes fonctionnelles disparaissent
+(`/axenr:import-help`, `/axenr:template-expert`, `/axenr:bi-architect`,
+`/axenr:bareme`) : leurs agents sont devenus des skills, qui se declenchent seuls
+(`axelor-import-export`, `axenr-template-expert`, `axenr-bi-architect`,
+`axenr-bareme-expert`).

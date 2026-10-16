@@ -1,9 +1,30 @@
 ---
 name: axenr-bareme-expert
-description: MUST BE USED pour concevoir, parametrer et livrer des baremes tarifaires Axelor/AxENR (moteur Pricing) a partir d'un besoin client ou d'un document tarifaire (BPU, grille de prix, bordereau, catalogue). Analyse la base ou le code source, decide article vs bareme, propose les articles, les axes de bareme, les champs Studio necessaires, puis produit des scripts SQL idempotents sans identifiant en dur et un cahier de recette. Trigger sur bareme, pricing, grille tarifaire, BPU, bordereau de prix, tarif, prix par palier, prix par segment, remise, coefficient, "calculer automatiquement le prix", "le prix depend de", "tarif different selon", "grille de prix client". Trigger aussi sur PricingRule, PricingLine, computePricingScale. Detecte automatiquement le client AxENR courant via cwd. Ne PAS trigger sur une simple question de prix de vente d'un article isole.
+description: >
+  Expert des baremes tarifaires Axelor / AxENR (moteur Pricing) : a partir d'un
+  besoin client ou d'un document tarifaire (BPU, grille de prix, bordereau,
+  catalogue), decide article ou bareme, propose articles, axes de bareme et
+  champs Studio, puis produit des scripts SQL idempotents sans identifiant en
+  dur et un cahier de recette. Declencheurs : « bareme », « pricing », « grille
+  tarifaire », « BPU », « bordereau de prix », « prix par palier », « tarif
+  different selon », « le prix depend de », « remise », « coefficient », «
+  PricingRule », « PricingLine ». PAS pour : prix de vente d'un article isole,
+  devis ponctuel.
+metadata:
+  owner: axenr
+  family: fonctionnel
 ---
 
 # Expert Baremes AxENR / Axelor
+
+## Environnement d'execution
+
+| Ou | Comportement |
+|---|---|
+| Claude Code | Lecture seule du projet (cwd) ; client detecte avec le skill `client-context-detector` ; livrables ecrits dans `~/Downloads`. |
+| claude.ai et Cowork | Pas d'acces au code : demander le client concerne et les fichiers utiles s'ils ne sont pas fournis ; livrer les fichiers en telechargement. |
+
+Le detail de reference est dans `references/catalog.md` ; des exemples de demandes dans `references/usage-examples.md`. Les charger quand la tache le demande.
 
 ## CONTEXTE
 
@@ -20,7 +41,7 @@ Stack :
 
 ## SOURCE DE VERITE
 
-Le skill **`bareme-pricing-catalog`** est ta reference. Il contient :
+Le catalogue **`references/catalog.md`** est ta reference. Il contient :
 - l'architecture reelle du moteur et son ordre d'evaluation
 - les contraintes dures verifiees dans le code AOS
 - la regle de decision article vs bareme

@@ -270,8 +270,21 @@ def run_checks() -> list[Check]:
                 )
             )
 
+    family_of = {(ROOT / p["source"].lstrip("./")).resolve(): p.get("category") for p in plugins_declared}
     names: dict[str, list[Path]] = {}
     for plugin_dir in owned_dirs:
+        if family_of.get(plugin_dir.resolve()) != "technique":
+            for kind in ("agents", "commands"):
+                if (plugin_dir / kind).exists():
+                    checks.append(
+                        Check(
+                            "SKILLS-ONLY",
+                            "CRITICAL",
+                            f"{plugin_dir.relative_to(ROOT)}/{kind}/ is not loaded by claude.ai or Cowork",
+                            fix="Outside the technique family, ship skills only (convert to skills/<name>/SKILL.md)",
+                        )
+                    )
+
         check_secrets(plugin_dir, checks)
 
         skills_dir = plugin_dir / "skills"

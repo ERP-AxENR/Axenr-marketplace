@@ -1,9 +1,4 @@
----
-description: Lance axenr-bareme-expert pour concevoir et livrer un bareme tarifaire Axelor (moteur Pricing) a partir d'un besoin client ou d'un document tarifaire. Analyse la base, decide article vs bareme, propose articles / axes / champs Studio, produit scripts SQL idempotents et cahier de recette.
-argument-hint: <besoin ou document tarifaire> [| fichier-optionnel]
----
-
-# /axenr-erp:bareme
+# /axenr-bareme-expert
 
 Expert du moteur **Pricing** d'Axelor pour les clients AxENR. Va du besoin exprime en langage
 naturel, ou d'un document tarifaire (BPU, bordereau, grille de prix), jusqu'aux scripts SQL
@@ -15,9 +10,9 @@ planeteenr-app / axenr-app) pour adapter la societe, les categories de tiers et 
 ## USAGE
 
 ```
-/axenr-erp:bareme le client veut un tarif de maintenance qui depend de la puissance et du type de client
-/axenr-erp:bareme paramétrer ce BPU | ~/Downloads/BPU-2026.pdf
-/axenr-erp:bareme pourquoi mon bareme ne s'applique pas sur ce devis ?
+/axenr-bareme-expert le client veut un tarif de maintenance qui depend de la puissance et du type de client
+/axenr-bareme-expert paramétrer ce BPU | ~/Downloads/BPU-2026.pdf
+/axenr-bareme-expert pourquoi mon bareme ne s'applique pas sur ce devis ?
 ```
 
 ## CE QU'IL PRODUIT
@@ -38,4 +33,4 @@ planeteenr-app / axenr-app) pour adapter la societe, les categories de tiers et 
 - comportement decide et acte pour : valeur nulle, debordement du dernier palier, segment non couvert
 - distinction stricte entre un **prix** et une **regle** (inclus, sur devis, coefficient, remise)
 
-Reference : skill `bareme-pricing-catalog`.
+Reference : `references/catalog.md`.

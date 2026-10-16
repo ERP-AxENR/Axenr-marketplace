@@ -1,11 +1,6 @@
----
-name: import-schema-catalog
-description: Catalogue de reference des schemas d'import Axelor/AxENR - structure des 10 feuilles type fournisseurs, AccountType FRA_PCG mapping, conventions chart-config.xml, ordre d'import par type de relation. Consomme par import-export-agent.
----
-
 # Import Schema Catalog
 
-> Base de connaissances versionnee pour l'agent import-export-agent. Schemas concrets + mappings critiques.
+> Base de connaissances versionnee pour l'agent axelor-import-export. Schemas concrets + mappings critiques.
 
 ## TYPES DE RELATIONS
 

@@ -18,7 +18,7 @@ axenr-marketplace/
 ├── docs/ARCHITECTURE.md
 ├── scripts/                          # bump-version.sh, marketplace-doctor.py
 └── plugins/
-    ├── axenr-core/                   # [socle] Pour tous : consultant ENR, client-context, notes d'amelioration
+    ├── axenr-core/                   # [socle] Pour tous : coherence ENR, client-context, notes d'amelioration
     ├── axenr-erp/                    # [fonctionnel] ERP : baremes
     ├── axenr-gmao/                   # [fonctionnel] GMAO : capacites reelles de la solution
     ├── axenr-data/                   # [fonctionnel] Import/export, templates XDocReport, BI Superset
@@ -29,22 +29,21 @@ axenr-marketplace/
 
 ## COMPOSANTS AXENR
 
+Regle : hors famille technique, uniquement des skills (ils fonctionnent dans
+claude.ai, Cowork et Claude Code). Agents et commandes : axenr-dev seulement.
+
 | Composant | Type | Plugin | Role |
 |-----------|------|--------|------|
-| erp-consultant-enr | agent | axenr-core | Consultant ERP senior ENR - challenge genericite, temporalite, reutilisabilite |
 | enr-coherence-checker | skill | axenr-core | Valide la coherence ENR (generique tous types, cycle commercial) |
 | client-context-detector | skill | axenr-core | Detecte le client AxENR depuis le cwd et charge ses ressources |
 | skill-improvement-note | skill | axenr-core | « Note-le pour le skill » : fiche d'amelioration -> ticket Jira AxENR MARKETPLACE |
-| axenr-bareme-expert | agent | axenr-erp | Baremes tarifaires Axelor (moteur Pricing) |
-| bareme-pricing-catalog | skill | axenr-erp | Catalogue de reference du moteur Pricing |
+| axenr-bareme-expert | skill | axenr-erp | Baremes tarifaires Axelor (moteur Pricing), catalogue en reference |
 | gmao-capabilities | skill | axenr-gmao | Capacites reelles GMAO : standard / parametrage / roadmap / specifique |
-| import-export-agent | agent | axenr-data | Expert import/export Axelor (read-only projet) |
-| import-schema-catalog | skill | axenr-data | Schemas d'import Axelor (10 feuilles fournisseurs, FRA_PCG) |
-| axenr-template-expert | agent | axenr-data | Templates Word XDocReport (.docx prets a l'import) |
-| template-expert-catalog | skill | axenr-data | Patterns XDocReport, pieges, champs |
-| axenr-bi-architect | agent | axenr-data | Requetes SQL PostgreSQL + dashboards Superset |
-| bi-templates-catalog | skill | axenr-data | 10 templates SQL, KPIs, modele de donnees |
+| axelor-import-export | skill | axenr-data | Imports et exports Axelor, CORE MODEL, schemas en reference |
+| axenr-template-expert | skill | axenr-data | Templates Word XDocReport (.docx prets a l'import), catalogue en reference |
+| axenr-bi-architect | skill | axenr-data | Requetes SQL PostgreSQL + dashboards Superset, catalogue en reference |
 | axelor-droits-expert | skill | axenr-permissions | Matrice de droits, import, audit, diagnostic |
+| erp-consultant-enr | agent | axenr-dev | Consultant ERP ENR appele par le ticket-solver (genericite, temporalite) |
 | ticket-solver-agent | agent | axenr-dev | Resolution autonome de tickets avec auto-apprentissage |
 | pr-reviewer-axenr | agent | axenr-dev | Review PR (axelor:code-reviewer + checks AxENR) |
 | axenr-montee-version | agent | axenr-dev | Montee de version des patchs AOS/AOP |
@@ -53,7 +52,7 @@ axenr-marketplace/
 | marketplace-doctor | skill | axenr-dev | Audit de sante de la marketplace |
 | weekly-skill-integration | skill | axenr-dev | « Integre les notes de la semaine » : fiches Jira -> PR hebdomadaire |
 
-### Commandes
+### Commandes (axenr-dev, Claude Code)
 
 | Commande | Usage |
 |----------|-------|
@@ -66,10 +65,10 @@ axenr-marketplace/
 | /axenr-dev:bump-version | Bump de la version AxENR unique (patch/minor/major/auto) |
 | /axenr-dev:montee-version | Montee de version AOS/AOP |
 | /axenr-dev:learn-review | Legacy, utiliser /axenr-dev:consolidate-lessons |
-| /axenr-data:import-help | Lance import-export-agent (read-only projet, outputs dans ~/Downloads) |
-| /axenr-data:template-expert | Lance axenr-template-expert (.docx dans ~/Downloads) |
-| /axenr-data:bi-architect | Lance axenr-bi-architect (SQL/MD dans ~/Downloads) |
-| /axenr-erp:bareme | Lance axenr-bareme-expert |
+
+Les skills fonctionnels n'ont pas de commande : on pose la question en langage
+naturel et Claude choisit le skill. Dans Claude Code, on peut aussi forcer un
+skill avec `/<nom-du-skill>`.
 
 ### Agents Axelor Partenaire (plugins/axelor/) - v2.5.0
 

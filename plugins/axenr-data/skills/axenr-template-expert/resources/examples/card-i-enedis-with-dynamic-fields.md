@@ -89,4 +89,4 @@ Fonction  : {d.clientPartner.mainContactFunction.name}
 - Toutes les references au siege social utilisent le filtre `[isDefaultAddr=true]` - verifier que chaque Partner a bien une partnerAddress avec cette valeur a TRUE
 - `{d.customerAddress}` est une reference directe (1 niveau) - OK
 - `{d.customerAddress.city.fullName}` est 2 niveaux apres `customerAddress` - OK
-- En cas de champ vide sur une chaine 3+ niveaux, creer un champ derive Groovy au niveau Projet (voir skill `template-expert-catalog` section pieges P1)
+- En cas de champ vide sur une chaine 3+ niveaux, creer un champ derive Groovy au niveau Projet (voir `references/catalog.md` du skill, section pieges P1)

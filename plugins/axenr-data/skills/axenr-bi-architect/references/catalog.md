@@ -1,8 +1,3 @@
----
-name: bi-templates-catalog
-description: Catalogue de references pour axenr-bi-architect - 10 templates SQL PostgreSQL pretes (pipeline commercial, taux de conversion, CA mensuel N/N-1, marge par affaire, DSO encours client, delai DP, puissance installee, top clients, jalons chantier, rotation stock), catalogue KPI par niveau (strategique/tactique/operationnel/ENR), bonnes pratiques Superset (dataset types, chart decision tree, layout, Jinja, index, RLS), conventions de nommage et modele de donnees Axelor detaille par domaine.
----
-
 # BI Templates Catalog
 
 > Knowledge base SQL + KPI + Superset pour l'agent `axenr-bi-architect`.

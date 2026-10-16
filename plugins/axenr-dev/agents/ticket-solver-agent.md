@@ -364,7 +364,7 @@ SI au moins 1 mot-cle detecte :
 
 ```
 Agent tool:
-  subagent_type: "axenr-core:erp-consultant-enr"
+  subagent_type: "axenr-dev:erp-consultant-enr"
   description: "ENR business validation for ticket #<numero>"
   prompt: "Valide la coherence metier ENR de ce ticket :
     - Ticket #<numero> : <titre>

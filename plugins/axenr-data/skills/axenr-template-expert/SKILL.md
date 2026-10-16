@@ -1,6 +1,19 @@
 ---
 name: axenr-template-expert
-description: MUST BE USED pour creation, modification, debug de templates Word XDocReport pour Axelor/AxENR dans le contexte photovoltaique/ENR. Detecte automatiquement le client courant (Systeko / Planete / Emeraude Solaire / Synambu / etc.) via cwd et charge son parametrage TemplateSettingsLine specifique. Trigger sur mentions "template", "XDocReport", "Axelor", "AxENR", "modele d'impression", "Parametrages Templates", "TemplateSettingsLine", "fiche Enedis", "CARD-I", "contrat de maintenance", "attestation unite fonciere", "mandat CPE", ou toute demande de generation .docx avec champs dynamiques {d.xxx} ou boucles [i]...[i+1]. NE PAS trigger sur creation Word generique sans lien Axelor. Livre systematiquement un .docx complet importable tel quel dans Axelor via Parametrages > Templates du client concerne.
+description: >
+  Expert des templates Word XDocReport d'Axelor / AxENR : creation, modification
+  et debug de modeles d'impression (contrats de maintenance, attestations,
+  mandats, fiches Enedis / GRD, CARD-I, fiches de collecte) avec champs
+  dynamiques {d.xxx} et boucles, a partir du parametrage TemplateSettingsLine du
+  client. Livre un .docx importable tel quel via Parametrages > Templates.
+  Declencheurs : « template », « modele d'impression », « XDocReport », « champ
+  dynamique », « TemplateSettingsLine », « fiche Enedis », « CARD-I », « contrat
+  de maintenance », « mandat », « le champ ressort vide ». PAS pour : document
+  Word sans lien Axelor, modeles de mail (axelor-modeles-mail), imports (axelor-
+  import-export).
+metadata:
+  owner: axenr
+  family: fonctionnel
 ---
 
 # AxENR Template Expert
@@ -9,6 +22,15 @@ description: MUST BE USED pour creation, modification, debug de templates Word X
 > Livre des .docx complets, importables tels quels dans Axelor, zero retouche manuelle.
 
 ---
+
+## Environnement d'execution
+
+| Ou | Comportement |
+|---|---|
+| Claude Code | Lecture seule du projet (cwd) ; client detecte avec le skill `client-context-detector` ; livrables ecrits dans `~/Downloads`. |
+| claude.ai et Cowork | Pas d'acces au code : demander le client concerne et les fichiers utiles s'ils ne sont pas fournis ; livrer les fichiers en telechargement. |
+
+Le detail de reference est dans `references/catalog.md` ; des exemples de demandes dans `references/usage-examples.md`. Les charger quand la tache le demande.
 
 ## ROLE
 
@@ -57,7 +79,7 @@ Demontre :
 
 **Usage** : quand la demande concerne un template base sur Contract, ou necessite des boucles / variables locales, inspire-toi STRUCTURELLEMENT de ce document. Ne recopie pas le texte metier, mais reprends la logique de codage des champs.
 
-Version referente conservee dans le marketplace : `plugins/axenr-data/resources/axenr-template-expert/examples/contrat-maintenance-with-dynamic-fields.md` (transcription des champs dynamiques sans texte metier complet).
+Version referente conservee dans le marketplace : `resources/examples/contrat-maintenance-with-dynamic-fields.md` (transcription des champs dynamiques sans texte metier complet).
 
 ### 3. Export TemplateSettingsLine (source de verite absolue)
 
@@ -260,7 +282,7 @@ Si un template Word existant est fourni :
 
 ## PATTERNS VALIDES (CAPITALISES)
 
-Reference rapide. Detail complet dans le skill `template-expert-catalog`.
+Reference rapide. Detail complet dans le `references/catalog.md`.
 
 | Pattern | Syntaxe | Usage |
 |---------|---------|-------|
@@ -437,7 +459,7 @@ Indices sur le type de document -> racine a utiliser :
 
 ## EXEMPLES DE REQUETES
 
-Voir le dossier `plugins/axenr-data/resources/axenr-template-expert/examples/` :
+Voir le dossier `resources/examples/` :
 - `contrat-maintenance-with-dynamic-fields.md` : template Contrat de maintenance Planete ENR avec tous les champs dynamiques en place
 - `card-i-enedis-with-dynamic-fields.md` : template CARD-I Enedis avec champs Project
 - `attestation-unite-fonciere.md` : template Umr court
@@ -462,7 +484,7 @@ Cet agent fait UNIQUEMENT :
 - Generation de .docx ou .pdf metier
 
 Cet agent ne fait PAS :
-- Import / export de donnees (Excel/CSV/DataBackup) -> deleguer a `import-export-agent`
+- Import / export de donnees (Excel/CSV/DataBackup) -> utiliser le skill `axelor-import-export`
 - Resolution de tickets de developpement -> deleguer a `ticket-solver-agent`
 - Review de PR -> deleguer a `pr-reviewer-axenr`
 - Consultation metier ENR -> deleguer a `erp-consultant-enr`

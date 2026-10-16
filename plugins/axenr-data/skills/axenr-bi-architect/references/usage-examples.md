@@ -1,9 +1,4 @@
----
-description: Lance axenr-bi-architect pour construire requetes SQL + dashboards Superset sur la base Axelor. Detecte le client AxENR depuis le cwd, produit SQL + Superset config + layout dashboard. Read-only projet, livrables dans ~/Downloads.
-argument-hint: <besoin-BI> [| fichier-optionnel]
----
-
-# /axenr-data:bi-architect
+# /axenr-bi-architect
 
 Architecte BI senior pour la stack Axelor/AxENR + Apache Superset. Produit des requetes SQL PostgreSQL pretes + la configuration Superset associee + le layout dashboard, a partir d'un besoin metier exprime en langage naturel.
 
@@ -14,22 +9,22 @@ Detecte automatiquement le client AxENR depuis le `cwd` (planeteenr-app / systek
 ### Sans fichier (mode conseil + generation)
 
 ```
-/axenr-data:bi-architect CA par commercial sur les 12 derniers mois
-/axenr-data:bi-architect pipeline commercial par etape avec montant pondere
-/axenr-data:bi-architect marge par affaire (CA - achats - main d'oeuvre)
-/axenr-data:bi-architect delai moyen depot DP vers obtention DP par gestionnaire reseau
-/axenr-data:bi-architect puissance installee cumulee par mois depuis 2024
-/axenr-data:bi-architect top 10 clients par CA signe cette annee
-/axenr-data:bi-architect rotation de stock par produit sur 6 mois
-/axenr-data:bi-architect pourquoi mon dashboard affiche plus d'affaires qu'il n'y en a en realite
+/axenr-bi-architect CA par commercial sur les 12 derniers mois
+/axenr-bi-architect pipeline commercial par etape avec montant pondere
+/axenr-bi-architect marge par affaire (CA - achats - main d'oeuvre)
+/axenr-bi-architect delai moyen depot DP vers obtention DP par gestionnaire reseau
+/axenr-bi-architect puissance installee cumulee par mois depuis 2024
+/axenr-bi-architect top 10 clients par CA signe cette annee
+/axenr-bi-architect rotation de stock par produit sur 6 mois
+/axenr-bi-architect pourquoi mon dashboard affiche plus d'affaires qu'il n'y en a en realite
 ```
 
 ### Avec fichier (analyse / diagnostic)
 
 ```
-/axenr-data:bi-architect analyse ce dataset | ~/Downloads/export-superset.csv
-/axenr-data:bi-architect pourquoi cette requete est lente | ~/Downloads/ma-requete.sql
-/axenr-data:bi-architect ameliore ce dashboard | ~/Downloads/dashboard-screenshot.png
+/axenr-bi-architect analyse ce dataset | ~/Downloads/export-superset.csv
+/axenr-bi-architect pourquoi cette requete est lente | ~/Downloads/ma-requete.sql
+/axenr-bi-architect ameliore ce dashboard | ~/Downloads/dashboard-screenshot.png
 ```
 
 ## DETECTION DU CLIENT
@@ -53,7 +48,7 @@ Lance depuis le dossier du client pour beneficier de la detection automatique :
 
 ```bash
 cd ~/Desktop/Projects/planeteenr-app
-/axenr-data:bi-architect CA mensuel avec comparaison N-1
+/axenr-bi-architect CA mensuel avec comparaison N-1
 ```
 
 ## ETAPES
@@ -64,7 +59,7 @@ Appel a `client-context-detector`. Banner de confirmation.
 
 ### Etape 2 : Chargement des ressources
 
-- Skill `bi-templates-catalog` (10 templates SQL + KPIs + Superset best practices)
+- `references/catalog.md` (10 templates SQL + KPIs + Superset best practices)
 - Meta-modele Axelor : `~/Downloads/export-12026303288952708643.xlsx` (940 tables, 21 815 champs) pour resolution ad-hoc de champs
 - Projet client (READ-ONLY) : lecture des extensions / champs custom `attrs` documentes si accessibles
 

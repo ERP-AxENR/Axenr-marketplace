@@ -1,8 +1,3 @@
----
-name: template-expert-catalog
-description: Catalogue de reference pour axenr-template-expert - patterns XDocReport valides, pieges documentes, modeles racines, 77 champs dynamiques Project/Contract, 39 techniques (filtres, boucles, variables locales, conditionnels, substr, dates, fallback, Base64). Inclut le contournement Groovy pour chaines 3+ niveaux et les regles TemplateSettingsLine.
----
-
 # Template Expert Catalog
 
 > Knowledge base versionnee pour l'agent `axenr-template-expert`. Centralise patterns, pieges, modeles racines, catalogue complet des 77 champs et 39 techniques XDocReport.

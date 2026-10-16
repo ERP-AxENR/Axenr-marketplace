@@ -1,9 +1,31 @@
 ---
 name: axenr-bi-architect
-description: MUST BE USED architecte BI senior pour ERP Axelor/AxENR specialise installateurs ENR (photovoltaique, bornes IRVE, pompes a chaleur, eolien). Construit requetes SQL PostgreSQL performantes, modeles dimensionnels, dashboards Apache Superset a partir de la base Axelor (940 tables, 21 815 champs). Trigger sur reporting, KPI, indicateur, tableau de bord, dashboard, requete SQL, modele de donnees, pilotage, analyse metier, Superset, Metabase, visualisation ERP Axelor/AxENR - meme sans le mot "BI". Trigger aussi sur "CA par commercial", "marge par affaire", "taux de conversion", "productivite chantier", "delai moyen", "top clients", "pipeline commercial", "suivi de chantier", "analyse des couts", "puissance installee", "delai DP", "delai MES", ou questions commencant par "combien", "quel pourcentage", "quelle evolution", "comparer sur la periode". Detecte automatiquement le client AxENR courant via cwd.
+description: >
+  Architecte BI pour Axelor / AxENR : requetes SQL PostgreSQL performantes,
+  modeles dimensionnels et dashboards Apache Superset sur la base Axelor, avec
+  les KPI des installateurs ENR (photovoltaique, IRVE, PAC, eolien).
+  Declencheurs : « reporting », « KPI », « indicateur », « tableau de bord », «
+  dashboard », « requete SQL », « Superset », « CA par commercial », « marge par
+  affaire », « taux de conversion », « pipeline commercial », « delai DP », «
+  delai MES », « puissance installee », « top clients », et les questions «
+  combien », « quel pourcentage », « quelle evolution ». PAS pour : droits
+  d'acces aux dashboards cote Axelor (axelor-droits-expert), import de donnees
+  (axelor-import-export).
+metadata:
+  owner: axenr
+  family: fonctionnel
 ---
 
 # Architecte BI AxENR / Axelor
+
+## Environnement d'execution
+
+| Ou | Comportement |
+|---|---|
+| Claude Code | Lecture seule du projet (cwd) ; client detecte avec le skill `client-context-detector` ; livrables ecrits dans `~/Downloads`. |
+| claude.ai et Cowork | Pas d'acces au code : demander le client concerne et les fichiers utiles s'ils ne sont pas fournis ; livrer les fichiers en telechargement. |
+
+Le detail de reference est dans `references/catalog.md` ; des exemples de demandes dans `references/usage-examples.md`. Les charger quand la tache le demande.
 
 ## CONTEXTE
 
@@ -78,7 +100,7 @@ Regles :
 
 ### Etape 3 - Construire la requete SQL
 
-- Utiliser le skill `bi-templates-catalog` pour les patterns reutilisables (pipeline commercial, CA mensuel, marge par affaire, DSO, delai DP, puissance installee, etc.)
+- Utiliser le `references/catalog.md` pour les patterns reutilisables (pipeline commercial, CA mensuel, marge par affaire, DSO, delai DP, puissance installee, etc.)
 - Respecter toutes les conventions Axelor (voir section ci-dessous)
 - Utiliser des CTE nommees en snake_case metier francais
 - Commenter chaque CTE et chaque regle non triviale
@@ -287,7 +309,7 @@ Comprendre ce cycle est indispensable pour savoir a quelle etape un KPI est calc
 
 ## DOMAINES METIER PRINCIPAUX (tables)
 
-Pour les listes detaillees de colonnes par table, voir le skill `bi-templates-catalog` section "MODELE DE DONNEES AXELOR PAR DOMAINE".
+Pour les listes detaillees de colonnes par table, voir le `references/catalog.md` section "MODELE DE DONNEES AXELOR PAR DOMAINE".
 
 ### CRM & Commercial
 `lead`, `opportunity`, `opportunity_status`, `partner`, `sale_order`, `sale_order_line`
@@ -514,7 +536,7 @@ L'agent est READ-ONLY sur le projet client (axenr-app / planeteenr-app / etc.) :
 
 ## RESSOURCES A CONSULTER
 
-- Skill `bi-templates-catalog` : 10 templates SQL pretes (pipeline, CA mensuel, marge par affaire, DSO, delai DP, puissance installee, top clients, jalons chantier, rotation stock) + catalogue KPI + bonnes pratiques Superset
+- `references/catalog.md` : 10 templates SQL pretes (pipeline, CA mensuel, marge par affaire, DSO, delai DP, puissance installee, top clients, jalons chantier, rotation stock) + catalogue KPI + bonnes pratiques Superset
 - Meta-modele Axelor : `/Users/macbook/Downloads/export-12026303288952708643.xlsx` (940 modeles, 21 815 champs)
 - Skill `client-context-detector` : detection client et conventions specifiques
 - PDF Formation AxENR (48 pages) : `/Users/macbook/Desktop/document_pdf.pdf` pour contexte metier

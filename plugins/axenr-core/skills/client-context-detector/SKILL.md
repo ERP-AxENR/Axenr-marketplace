@@ -1,6 +1,6 @@
 ---
 name: client-context-detector
-description: Detecte le client AxENR courant a partir du cwd ou d'un argument. Mappe cwd (ex: systeko-app, planeteenr-app, emeraude-solaire-app) vers le code client et charge les ressources specifiques (TemplateSettingsLine export, conventions de nommage, chemins standards). Utilise par import-export-agent et axenr-template-expert.
+description: Detecte le client AxENR courant a partir du cwd ou d'un argument. Mappe cwd (ex: systeko-app, planeteenr-app, emeraude-solaire-app) vers le code client et charge les ressources specifiques (TemplateSettingsLine export, conventions de nommage, chemins standards). Utilise par axelor-import-export, axenr-template-expert, axenr-bi-architect et axenr-bareme-expert.
 ---
 
 # Client Context Detector
@@ -154,7 +154,7 @@ Permet de valider les ordres d'import et les conventions importId.
 ## INTEGRATION AGENTS
 
 Les agents suivants DOIVENT appeler ce skill en PHASE 0 (ou equivalent) avant toute action :
-- import-export-agent
+- axelor-import-export
 - axenr-template-expert
 - axenr-bi-architect
 

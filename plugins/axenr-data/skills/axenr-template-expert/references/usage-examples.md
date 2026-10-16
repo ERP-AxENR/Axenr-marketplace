@@ -1,9 +1,4 @@
----
-description: Lance axenr-template-expert pour creer/modifier/debuger un template Word XDocReport Axelor/AxENR (contrats, attestations, mandats Enedis/GRD, fiches collecte, CARD-I). Read-only projet, livre .docx dans ~/Downloads.
-argument-hint: <besoin> [| fichier-docx-optionnel] [| export-template-settings-line-optionnel]
----
-
-# /axenr-data:template-expert
+# /axenr-template-expert
 
 Expert senior en templates Word XDocReport pour Axelor / AxENR. Travaille **en lecture seule** sur le projet, produit des .docx complets dans `~/Downloads/`, importables tels quels dans Axelor via Parametrages > Templates.
 
@@ -14,29 +9,29 @@ Expert senior en templates Word XDocReport pour Axelor / AxENR. Travaille **en l
 ### Creation pure (depuis besoin seul)
 
 ```
-/axenr-data:template-expert cree un mandat ENEDIS pour Systeko
-/axenr-data:template-expert cree une fiche de collecte avec : nom projet, adresse chantier, SIRET client, puissance kWc
-/axenr-data:template-expert genere un contrat de maintenance type base sur la racine Contract
+/axenr-template-expert cree un mandat ENEDIS pour Systeko
+/axenr-template-expert cree une fiche de collecte avec : nom projet, adresse chantier, SIRET client, puissance kWc
+/axenr-template-expert genere un contrat de maintenance type base sur la racine Contract
 ```
 
 ### Modification d'un template existant
 
 ```
-/axenr-data:template-expert convertis "SAS L'HORIZON SOLAIRE" en champ dynamique dans ce template | ~/Downloads/contrat-m26-015.docx
-/axenr-data:template-expert ajoute une boucle sur les equipements | ~/Downloads/template-planete.docx
-/axenr-data:template-expert dynamise ces zones [SIRET] [adresse siege] [date] | ~/Downloads/mandat.docx
+/axenr-template-expert convertis "SAS L'HORIZON SOLAIRE" en champ dynamique dans ce template | ~/Downloads/contrat-m26-015.docx
+/axenr-template-expert ajoute une boucle sur les equipements | ~/Downloads/template-planete.docx
+/axenr-template-expert dynamise ces zones [SIRET] [adresse siege] [date] | ~/Downloads/mandat.docx
 ```
 
 ### Avec export TemplateSettingsLine client (source de verite)
 
 ```
-/axenr-data:template-expert cree un CARD-I BT pour Systeko | ~/Downloads/card-i-brut.docx | ~/Downloads/export-templatesettingsline-systeko.xlsx
+/axenr-template-expert cree un CARD-I BT pour Systeko | ~/Downloads/card-i-brut.docx | ~/Downloads/export-templatesettingsline-systeko.xlsx
 ```
 
 ### Debug d'un champ qui revient vide
 
 ```
-/axenr-data:template-expert le champ {d.clientPartner.mainAddress.city.fullName} est vide dans mes renditions
+/axenr-template-expert le champ {d.clientPartner.mainAddress.city.fullName} est vide dans mes renditions
 ```
 
 ## PARSING DES ARGUMENTS
@@ -46,7 +41,7 @@ Format : `<besoin libre>` [`|` `<chemin-docx>`] [`|` `<chemin-xlsx-TemplateSetti
 Le caractere `|` separe les parties. Exemple :
 
 ```
-/axenr-data:template-expert convertis ces zones en champs dynamiques | /Users/macbook/Downloads/mandat.docx | /Users/macbook/Downloads/export-tsl.xlsx
+/axenr-template-expert convertis ces zones en champs dynamiques | /Users/macbook/Downloads/mandat.docx | /Users/macbook/Downloads/export-tsl.xlsx
 ```
 
 Si un seul chemin est fourni :
@@ -77,7 +72,7 @@ Lance l'agent **depuis le dossier du client** pour beneficier de la detection au
 
 ```bash
 cd ~/Desktop/Projects/systeko-app
-/axenr-data:template-expert cree un mandat ENEDIS
+/axenr-template-expert cree un mandat ENEDIS
 # -> client = Systeko detecte automatiquement
 # -> livrable : ~/Downloads/Mandat_ENEDIS_Systeko_V1.docx
 ```
@@ -147,7 +142,7 @@ Actions disponibles :
 
 ## EXEMPLES DE SORTIES
 
-Voir `plugins/axenr-data/resources/axenr-template-expert/examples/` :
+Voir `resources/examples/` :
 - `contrat-maintenance-with-dynamic-fields.md`
 - `card-i-enedis-with-dynamic-fields.md`
 

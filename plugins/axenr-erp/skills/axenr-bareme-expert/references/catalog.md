@@ -1,8 +1,3 @@
----
-name: bareme-pricing-catalog
-description: Catalogue de reference pour axenr-bareme-expert - moteur Pricing Axelor (Pricing / PricingRule / PricingLine), contraintes dures verifiees dans le code AOS 8.5, regle de decision article vs bareme, 7 patterns de parametrage, 9 pieges documentes avec leur symptome, methode de bout en bout du besoin client aux scripts SQL livrables, requetes d'inventaire et modele de scripts idempotents sans identifiant en dur.
----
-
 # Bareme Pricing Catalog
 
 > Knowledge base versionnee pour l'agent `axenr-bareme-expert`. Issue d'une integration reelle de bout en bout : BPU de maintenance photovoltaique Emeraude Solaire, 22 articles, 26 baremes, 178 lignes de grille, 181 cas de recette conformes.

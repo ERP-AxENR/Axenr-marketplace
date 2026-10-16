@@ -1,9 +1,4 @@
----
-description: Lance l'import-export-agent pour preparer / corriger / comprendre un import/export Axelor OU modifier un template Word OU generer un document. Read-only sur le projet, produit Excel/CSV/PDF/Word/guides dans ~/Downloads. Fichier optionnel.
-argument-hint: <besoin> [| fichier-optionnel]
----
-
-# /axenr-data:import-help
+# /axelor-import-export
 
 Assistant expert operations sur la donnee Axelor. Travaille **en lecture seule** sur le projet (`axenr-app` ou autre), produit des livrables dans `~/Downloads/`.
 
@@ -14,30 +9,30 @@ Assistant expert operations sur la donnee Axelor. Travaille **en lecture seule**
 ### Sans fichier (mode conseil / advice)
 
 ```
-/axenr-data:import-help quels sont les pieges quand on importe des Partner ?
-/axenr-data:import-help comment boucler sur les equipements d'un contrat en XDocReport ?
-/axenr-data:import-help genere-moi un modele vierge de Mandat ENEDIS
-/axenr-data:import-help ordre d'import pour fournisseurs complets
+/axelor-import-export quels sont les pieges quand on importe des Partner ?
+/axelor-import-export comment boucler sur les equipements d'un contrat en XDocReport ?
+/axelor-import-export genere-moi un modele vierge de Mandat ENEDIS
+/axelor-import-export ordre d'import pour fournisseurs complets
 ```
 
 ### Avec fichier (preparation, modification, debug)
 
 ```
-/axenr-data:import-help prepare un import fournisseurs | /Users/macbook/Downloads/donnees-brutes.xlsx
-/axenr-data:import-help convertis "Emeraude Solaire" en champ dynamique | /Users/macbook/Downloads/mandat.docx
-/axenr-data:import-help mon import echoue avec Column not found | /tmp/error.log
+/axelor-import-export prepare un import fournisseurs | /Users/macbook/Downloads/donnees-brutes.xlsx
+/axelor-import-export convertis "Emeraude Solaire" en champ dynamique | /Users/macbook/Downloads/mandat.docx
+/axelor-import-export mon import echoue avec Column not found | /tmp/error.log
 ```
 
 ### Mode debug
 
 ```
-/axenr-data:import-help mon import echoue avec "Column not found: partner.importId" | /tmp/error.log
+/axelor-import-export mon import echoue avec "Column not found: partner.importId" | /tmp/error.log
 ```
 
 ### Mode CORE MODEL
 
 ```
-/axenr-data:import-help duplique la config comptable de societe 101 vers societe 102 | /Users/macbook/Downloads/databackup-101/
+/axelor-import-export duplique la config comptable de societe 101 vers societe 102 | /Users/macbook/Downloads/databackup-101/
 ```
 
 ## DETECTION AUTOMATIQUE DU CLIENT
@@ -60,7 +55,7 @@ Lance la commande depuis le dossier du client pour beneficier de la detection au
 
 ```bash
 cd ~/Desktop/Projects/systeko-app
-/axenr-data:import-help prepare un import fournisseurs pour la societe principale
+/axelor-import-export prepare un import fournisseurs pour la societe principale
 # -> client = Systeko detecte
 # -> conventions Systeko appliquees (prefixes, societe)
 ```
@@ -99,7 +94,7 @@ Sinon -> demander confirmation a l'utilisateur
 ### Etape 3 : Deleguer a l'agent
 
 ```
-subagent_type: import-export-agent
+subagent_type: axelor-import-export
 prompt: |
   Besoin : <besoin-parse>
   Fichier : <chemin ou "aucun">
@@ -131,13 +126,13 @@ Actions disponibles :
 ### Exemple 1 : import fournisseurs simple
 
 ```
-/axenr-data:import-help prepare un import des 150 fournisseurs du fichier ci-joint pour la societe 102 | /Users/macbook/Downloads/fournisseurs-bruts.xlsx
+/axelor-import-export prepare un import des 150 fournisseurs du fichier ci-joint pour la societe 102 | /Users/macbook/Downloads/fournisseurs-bruts.xlsx
 ```
 
 L'agent :
 1. Detecte project_path = axenr-app
 2. Parse fournisseurs-bruts.xlsx -> 150 lignes, 8 colonnes
-3. Charge le catalogue import-schema-catalog (10 feuilles fournisseurs)
+3. Charge le catalogue references/catalog.md (10 feuilles fournisseurs)
 4. Propose un mapping colonnes source -> colonnes Axelor
 5. Attend validation
 6. Genere `~/Downloads/Import_Fournisseurs_V1.xlsx` (10 onglets) + `CHECKLIST-Fournisseurs.md`
@@ -145,7 +140,7 @@ L'agent :
 ### Exemple 2 : CORE MODEL
 
 ```
-/axenr-data:import-help duplique la config comptable 101 vers 102 | /Users/macbook/Downloads/databackup-101/
+/axelor-import-export duplique la config comptable 101 vers 102 | /Users/macbook/Downloads/databackup-101/
 ```
 
 L'agent :
@@ -158,7 +153,7 @@ L'agent :
 ### Exemple 3 : debug
 
 ```
-/axenr-data:import-help import refuse avec "Record not found for partner.importId=F0042"
+/axelor-import-export import refuse avec "Record not found for partner.importId=F0042"
 ```
 
 L'agent :
