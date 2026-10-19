@@ -23,6 +23,7 @@ axenr-marketplace/
     ├── axenr-gmao/                   # [fonctionnel] GMAO : capacites reelles de la solution
     ├── axenr-data/                   # [fonctionnel] Import/export, templates XDocReport/Carbone, modeles de mail, BI Superset
     ├── axenr-permissions/            # [fonctionnel] Droits et permissions
+    ├── axenr-pm/                     # [support] Jira, priorisation, temps et facturation, audit client, annonces
     ├── axenr-dev/                    # [technique] Claude Code : ticket-solver, PR review, lecons, outillage
     └── axelor/                       # [technique] Partenaire Axelor (ne pas modifier)
 ```
@@ -47,6 +48,14 @@ claude.ai, Cowork et Claude Code). Agents et commandes : axenr-dev seulement.
 | demo-data-generator | skill | axenr-data | Donnees de demo credibles : cadrage du scenario, SQL idempotent, REST ou bundle, audit |
 | axenr-bi-architect | skill | axenr-data | Requetes SQL PostgreSQL + dashboards Superset, catalogue en reference |
 | axelor-droits-expert | skill | axenr-permissions | Cadrage et creation de profils, matrice de droits, import, audit, diagnostic |
+| axelor-audit-ecart | skill | axenr-erp | Audit d'ecart SFD vs code et base (piege du low-code) |
+| organisateur-jira | skill | axenr-pm | Creation et organisation des tickets Jira selon les regles AxENR |
+| jira-spec-writer | skill | axenr-pm | Redaction de specs Jira challengees, format Redmine en reference |
+| jira-expert | skill | axenr-pm | Configuration Jira, JQL, API et contraintes du connecteur |
+| jira-priorisation | skill | axenr-pm | Priorisation de la charge d'un collaborateur (grille en 7 bandes) |
+| jira-timelog-facturation | skill | axenr-pm | Temps Jira / Tempo et bordereau de facturation |
+| axenr-erp-audit | skill | axenr-pm | Audit client ERP / GMAO en 5 phases |
+| axenr-release-announcer | skill | axenr-pm | Annonces de version et communication client |
 | erp-consultant-enr | agent | axenr-dev | Consultant ERP ENR appele par le ticket-solver (genericite, temporalite) |
 | ticket-solver-agent | agent | axenr-dev | Resolution autonome de tickets avec auto-apprentissage |
 | pr-reviewer-axenr | agent | axenr-dev | Review PR (axelor:code-reviewer + checks AxENR) |

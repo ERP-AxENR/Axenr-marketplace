@@ -1,6 +1,6 @@
 {
   "name": "axenr-core",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Socle AxENR installe pour tous : consultant ERP ENR (genericite multi-ENR, coherence temporelle), detection du client courant, charte graphique officielle (logos, couleurs, polices) et remontee des apprentissages vers la marketplace (« Note-le pour le skill »).",
   "author": {
     "name": "AxENR",

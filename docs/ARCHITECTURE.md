@@ -34,10 +34,11 @@ La famille est declaree dans `.claude-plugin/marketplace.json` (champ
 | Plugin | Famille | Contenu |
 |---|---|---|
 | `axenr-core` | socle | Coherence ENR, detection du client, charte graphique (`axenr-brand`), « Note-le pour le skill » (consultant ENR en skill : a venir, fusion des 6 exemplaires) |
-| `axenr-erp` | fonctionnel | `axenr-bareme-expert` : baremes et moteur Pricing |
+| `axenr-erp` | fonctionnel | `axenr-bareme-expert` : baremes et moteur Pricing ; `axelor-audit-ecart` : ecart SFD vs code et base |
 | `axenr-gmao` | fonctionnel | Capacites reelles de la GMAO (standard, parametrage, roadmap, specifique), questionnaires d'intervention |
 | `axenr-data` | fonctionnel | `axelor-import-export`, `axenr-template-expert`, `axelor-modeles-mail`, `axenr-bi-architect`, `demo-data-generator` |
 | `axenr-permissions` | fonctionnel | Matrice de droits, import, audit, diagnostic |
+| `axenr-pm` | support | `organisateur-jira`, `jira-spec-writer`, `jira-expert`, `jira-priorisation`, `jira-timelog-facturation`, `axenr-erp-audit`, `axenr-release-announcer` |
 | `axenr-dev` | technique | Ticket-solver et son consultant ENR, revue de PR, montee de version, environnements jetables, connecteurs tiers, lecons, outillage de la marketplace, integration du vendredi |
 | `axelor` | technique | Plugin du partenaire Axelor, non modifie |
 
@@ -94,7 +95,6 @@ en plus `client-systeko`.
 
 | Plugin | Famille | Origine du contenu |
 |---|---|---|
-| `axenr-pm` | support | Jira (organisateur, redaction de specs, expert), annonces de version, suivi des temps et facturation, priorisation |
 | `axenr-marketing` | support | Strategie marketing, CRM et leads, newsletters, LinkedIn, YouTube (lexique metier ENR, carte des douleurs), offres commerciales |
 | `axenr-ai` | technique | Axelor AI, et EnergIA quand le sujet reprendra |
 | `axenr-erp` (suite) | fonctionnel | Support fonctionnel AOS, modeles d'affaire, facture electronique, modules annexes |
