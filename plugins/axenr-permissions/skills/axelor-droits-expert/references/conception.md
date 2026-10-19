@@ -11,6 +11,13 @@ C'est là que se gagne la maintenabilité.
 Indicateur de qualité : si chaque rôle n'apparaît que dans un seul groupe, la décomposition est
 ratée. Reprends-la.
 
+## Étape 0 : la porte de cadrage
+
+Avant toute écriture (SQL ou fichier d'import), fais trancher le mode (démo ou projet), la méthode
+de déploiement (SQL ou bundle d'import), les questions de périmètre et la checklist des cas limites
+L1 à L17, puis fais valider un récapitulatif : `cadrage-profils.md`. Le reste de ce fichier décrit
+comment concevoir la matrice une fois ce cadrage posé.
+
 ## Étape 1 : cadrer avant de demander
 
 Un client à qui on envoie une matrice de tout l'ERP la remplit mal, ou pas du tout.
@@ -92,7 +99,17 @@ le meilleur socle possible : il couvre tout sans rien ouvrir en écriture.
 
 Motifs : un droit posé sur un groupe ne se mutualise pas, et il est invisible dans un audit qui
 parcourt les rôles. Il ressort au pire moment, quand quelqu'un cherche pourquoi un profil voit
-quelque chose qu'il ne devrait pas voir.
+quelque chose qu'il ne devrait pas voir. Autre motif, côté champs : les règles de champ ne
+s'additionnent pas, et une meta permission posée sur le groupe masque celles des rôles
+(`moteur-evaluation.md`, section 11).
+
+**Autre convention rencontrée.** L'apport d'un chef de projet Axelor (paquet du 15/10/2026,
+AOS 9.1.6 / AOP EE 8.2.3) recommande « groupe = portée, rôle = permission » : les menus sur le
+groupe (`meta_menu_groups`), les permissions sur le rôle, comme les groupes des données de démo
+AOS. Le moteur accepte les deux (règles b et c, `moteur-evaluation.md`). Sur un projet AxENR, garde
+la convention de ce fichier. Sache reconnaître l'autre sur une instance existante : ses menus
+n'apparaissent pas dans un audit par rôle, il faut aussi lire `meta_menu_groups`. Le même apport
+note que la voie d'import est de toute façon centrée sur le rôle (`meta_menu_roles`).
 
 Pour les menus, trois contrôles avant de livrer :
 
@@ -100,6 +117,20 @@ Pour les menus, trois contrôles avant de livrer :
 2. **Toute la chaîne d'ancêtres** de chaque menu attribué porte le même rôle.
 3. Aucun menu d'administration n'a atterri dans un rôle socle. Vérifie-le par un test explicite,
    pas à l'œil.
+
+## Dépendances cachées et cas limites
+
+Le socle commun ne suffit pas toujours : chaque geste (valider, réaliser, générer, saisir un e-mail
+dans une fiche tiers) peut écrire des objets techniques invisibles à l'écran. Avant de livrer une
+liste blanche, applique la méthode de `fermeture-dependances-vues.md`.
+
+Trois cas limites à trancher avec le client, que la grille ne fait pas apparaître
+(`cadrage-profils.md`, L14 à L16) :
+- **administration déléguée** : hors `admins`, personne ne peut créer un compte, changer un groupe
+  ou des rôles, ni saisir un mot de passe depuis les écrans (AOP 8.2.3) ;
+- **libre-service** : comment chacun change son mot de passe et ses préférences, sans pouvoir
+  changer d'agence au passage ;
+- **supprimer ou archiver** : archiver demande le droit de suppression à l'écran.
 
 ## Conventions de nommage
 
@@ -123,7 +154,7 @@ Choisis un préfixe client court et tiens-le. Exemple avec `CLI` :
 |---|---|---|
 | Ses propres créations | `self.createdBy = ?` | `__user__` |
 | Ses enregistrements | `self.user = ?` | `__user__` |
-| Sociétés autorisées | `self.company.id in (?)` | `__user__.companySet.id` |
+| Sociétés autorisées | `self.company.id in (?)` | `__user__.companySet.id` (7.x) ou `__user__.companySet.id.plus(0)` (8.2.3, apport partenaire) |
 
 `self` désigne l'enregistrement, un `?` par paramètre, paramètres séparés par des virgules.
 
@@ -132,6 +163,8 @@ celle des preuves sur AOP 7.x. La documentation AOS 8.5 montre une variante avec
 (extraction texte peu fiable du PDF officiel). Avant de livrer une condition sur une instance 8.x,
 relis la doc de la version exacte, ou copie une condition qui fonctionne déjà sur l'instance, puis
 teste-la sur un utilisateur dédié.
+Comportement réel par opération (création, import, export, cas limite des listes) :
+`permissions-conditionnelles.md`.
 Teste toujours une condition sur un utilisateur dédié avant de la généraliser : une condition
 invalide rend l'objet inaccessible ou lève une erreur serveur.
 
