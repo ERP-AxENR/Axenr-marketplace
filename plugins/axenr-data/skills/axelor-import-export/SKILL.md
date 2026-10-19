@@ -1,15 +1,20 @@
 ---
 name: axelor-import-export
 description: >
-  Expert import et export de donnees Axelor / AxENR : preparation des fichiers
-  Excel et CSV, relations M2O / O2M / M2M, conventions importId, duplication du
-  CORE MODEL entre societes, comptes FRA_PCG, creation de societe, reprises
-  volumineuses (migrations Divalto, 1000+ lignes) et diagnostic des imports en
-  echec. Declencheurs : « import », « export », « reprise de donnees », «
-  fichier d'import », « importId », « CORE MODEL », « creer une societe », « mon
-  import echoue », « Column not found », « Record not found ». PAS pour :
-  templates Word (axenr-template-expert), droits (axelor-droits-expert),
-  requetes de reporting (axenr-bi-architect).
+  Expert import et export de donnees Axelor / AxENR, tous moteurs : fichier
+  Excel de l'ecran d'import, configuration d'import classique (bind.xml +
+  CSV/XML/ZIP), import de l'edition entreprise (classeurs xlsx, bouton Import
+  des grilles, /ws/data/import) et paquet data-init qui recree l'etat reel
+  d'une instance sur une base neuve. Relations M2O / O2M / M2M, importId,
+  CORE MODEL, creation de societe, reprises volumineuses, gabarits tires des
+  captures ou exports du client, diagnostic. Declencheurs : « import », «
+  reprise de donnees », « gabarit d'import », « fichier d'import », «
+  importId », « CORE MODEL », « bind.xml », « configuration d'import », «
+  Reussi mais Non vide 0 », « mon import echoue », « Column not found », «
+  data-init », « recreer la base de recette », import bundle, EE import
+  template. PAS pour : templates Word (axenr-template-expert), droits et
+  profils (axelor-droits-expert), donnees de demo inventees
+  (demo-data-generator), reporting (axenr-bi-architect).
 metadata:
   owner: axenr
   family: fonctionnel
@@ -29,6 +34,52 @@ metadata:
 | claude.ai et Cowork | Pas d'acces au code : demander le client concerne et les fichiers utiles s'ils ne sont pas fournis ; livrer les fichiers en telechargement. |
 
 Le detail de reference est dans `references/catalog.md` ; des exemples de demandes dans `references/usage-examples.md`. Les charger quand la tache le demande.
+
+## ROUTAGE : QUEL CAS, QUELLE REFERENCE
+
+Premier geste : identifier le **moteur** et la **version** de l'instance cible (AOP, AOS, edition entreprise ou non : `scripts/ee_api.py info` en lecture seule). Les references marquees « paquet partenaire » viennent d'un chef de projet Axelor (paquet du 15/10/2026), eprouvees sur AOS 9.1 / AOP 8.2 : sur une instance AxENR (AOP 7.4 / AOS 8.x), chaque piege est une hypothese a verifier sur la version cible.
+
+| Cas | Moteur | Reference a charger |
+|---|---|---|
+| Fichier Excel prepare pour l'ecran d'import (mapping colonnes) : tiers, fournisseurs, comptes, CORE MODEL, creation de societe | ecran d'import | modes A a D ci-dessous + `references/catalog.md` |
+| `bind.xml` + CSV/XML/ZIP par *Administration > Configurations d'import* : vues, actions, traductions livrees sans reconstruire le WAR, donnees metier en plusieurs passes, import « Reussi » sans rien en base (`Non vide = 0`), import vert mais fiches fausses | classique (`com.axelor.data`) | `references/import-bundles-classic.md` (paquet partenaire) |
+| Tiers, clients et fournisseurs, enseignes, situations comptables, adresses en plusieurs passes avec le moteur classique | classique | en plus : `references/import-bundles-partner-case-study.md` |
+| Instance **edition entreprise** : classeurs xlsx (un onglet par modele), bouton « Import » des grilles ou `/ws/data/import` ; gabarits vides ou remplis a partir des captures, exports ou Excel bruts du client ; passage unique en recette | EE | `references/import-ee-templates.md`, puis a la demande `import-ee-entree-client.md`, `import-ee-moteur.md`, `import-ee-referentiels.md`, `import-ee-passage-en-recette.md` (paquet partenaire) |
+| Figer l'etat reel d'une instance (souvent la recette) en paquet `data-init` qui la recree a l'identique sur une base neuve ; verifier qu'un data-init existant ne peut pas rejouer sur une base vivante | data-init (moteur classique au premier demarrage) | `references/live-state-to-data-init.md`, `import-data-init-perimetre.md`, `import-data-init-preuves.md` (paquet partenaire) |
+| Inventer des donnees de demonstration | - | skill `demo-data-generator` |
+| Concevoir des profils, groupes, roles, permissions | - | skill `axelor-droits-expert` |
+
+### Regles qui changent selon le moteur
+
+Ne jamais transposer une regle d'un moteur a l'autre :
+
+| Sujet | Ecran d'import (modes A a D) | Classique `csv-inputs` | Edition entreprise (xlsx) |
+|---|---|---|---|
+| Booleen | `TRUE` / `FALSE` (regle capitalisee AxENR) | `true` / `false`, aussi `0/1`, `yes/no` ; cellule vide = `false` | seul `true` est vrai ; `1`, `oui` = faux ; vide = NULL |
+| Mise a jour | inclure tous les champs `@NotNull` | `search` seul = upsert ; `update="true"` sur un input = mise a jour seulement (ligne ignoree si absente) | colonne absente = conservee ; cellule vide = effacee ; une cle unique deja prise ecrase la fiche |
+| Collections | onglet `Modele.champ` | ajout seulement, jamais de retrait | onglet de liaison `Modele.champ`, rejeu idempotent |
+| Preuve du resultat | checklist post-import | compteur `Non vide`, jamais `Reussi` ; postconditions metier | `verify_import.py` a 0 ecart ; le rapport vert ne prouve rien |
+
+### Scripts (`scripts/`, Python 3 : `requests`, `openpyxl`)
+
+Executables seulement dans Claude Code ; dans claude.ai, donner les commandes a l'utilisateur. Aucun mot de passe dans une commande, un fichier du depot ou la conversation : sur une instance hebergee, l'utilisateur ouvre la session lui-meme (recette `curl` de `references/import-ee-templates.md`, « Se connecter »).
+
+| Script | Role | Ecrit ? |
+|---|---|---|
+| `ee_api.py` | client REST : `info`, `fields`, `keys`, `plan`, `links`, `export`, `parse`, `import` | `import` seulement, avec `--confirm-write <URL exacte>` ; `parse` depose une piece jointe |
+| `check_templates.py` | controle hors ligne des classeurs EE | non |
+| `verify_import.py` | relit en base, valeur par valeur, ce qu'un classeur devait ecrire | non |
+| `lire_etat.py` | oracle d'un perimetre (lecture REST) | non |
+| `generer_paquet.py` | paquet `data-init` depuis l'oracle | fichiers locaux seulement |
+| `controles_statiques.py` | XSD, `call=`, cles, liens du paquet (`xmllint` requis) | non |
+| `comparer_etat.py`, `verifier_journal.py` | comparaison oracle / base recreee, erreurs du paquet au journal | non |
+| `controle_sql.py` | cases NULL et empreintes sur l'env de preuve (`psql`) | non |
+| `jouer_import_config.py` | rejeu par configuration d'import | oui, refuse toute URL hors `localhost` |
+| `perimetre.py` | lecture du `perimetre.json` (module partage) | non |
+
+`assets/` : `perimetre-exemple.json` (structure d'un perimetre prouve, anonymise) et `geste-compteur-sequence-tiers.xml` (reglage du compteur des tiers apres recreation).
+
+Le garde-fou ci-dessous s'applique aussi au data-init : le paquet est genere dans `output_dir`, jamais dans `axenr-app` ; c'est le developpeur qui le pose dans le module application, en suivant la notice.
 
 ## CONTEXTE METIER AXENR
 
@@ -183,6 +234,9 @@ Regles :
    - "CORE MODEL|duplication societe|plan comptable" -> MODE CORE-MODEL
    - "nouvelle societe|creer societe" -> MODE COMPANY-CREATE
    - "erreur|echec|import refuse|column not found" -> MODE DEBUG
+   - "bind.xml|configuration d'import|csv-inputs|Non vide|vues sans rebuild" -> references/import-bundles-classic.md
+   - "edition entreprise|gabarit|bouton Import|/ws/data/import|captures ou exports du client" -> references/import-ee-templates.md
+   - "data-init|recreer la base|figer l'etat de la recette" -> references/live-state-to-data-init.md
    - "template|champ dynamique|{d.|Word|XDocReport|attestation|mandat|contrat|fiche enedis" -> DELEGUER a axenr-template-expert (c'est son perimetre, pas le notre)
    - Ambigue -> demander
 
@@ -641,7 +695,7 @@ formattedFullName   = "<streetName>\n<zip> <cityName>\n<countryName>"
 
 **Symptome** : valeur booleenne ignoree, traite comme false.
 
-**Regle** : `TRUE` / `FALSE` en majuscules. Pas `true`, pas `1/0`, pas `Oui/Non`.
+**Regle** : `TRUE` / `FALSE` en majuscules. Pas `true`, pas `1/0`, pas `Oui/Non`. Regle de l'ecran d'import : le moteur classique et l'edition entreprise lisent les booleens autrement (voir « Regles qui changent selon le moteur »).
 
 ### 8. Date - YYYY-MM-DD sans heure
 
