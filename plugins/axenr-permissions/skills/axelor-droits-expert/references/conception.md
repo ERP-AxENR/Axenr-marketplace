@@ -52,6 +52,23 @@ Ordre de préférence :
    le rôle standard, qu'une montée de version réécrira.
 3. Aucun ne convient : en créer un.
 
+### Convention AxENR des rôles en double
+
+Pour chaque module, AxENR tient deux variantes de rôle :
+
+| Rôle | Contenu | Usage |
+|---|---|---|
+| `X User` | Permissions **et** menus du module | Profil qui travaille dans le module |
+| `X Read (sans menu)` | Permissions de lecture seules, aucun menu | Profil qui doit seulement lire ces données depuis un autre écran (relation, planning, tableau de bord) |
+
+Quand la variante « sans menu » manque (cas typique : un rôle `Employee Read` standard qui embarque
+les menus RH), **crée-la** en reprenant les permissions sans les menus, plutôt que d'attribuer le
+rôle complet : sinon le profil voit apparaître un module entier qu'il n'utilise pas.
+
+Dans l'interface, pour rattacher une permission existante au nouveau rôle, utilise la **loupe** de
+l'onglet Autorisations, jamais le **+** : le « + » crée une nouvelle permission et bute sur la
+contrainte d'unicité du nom.
+
 Cas fréquent du rôle « socle trop large » : un rôle de base fourni par l'éditeur donne souvent des
 droits d'administration en plus des référentiels. Dans ce cas, crée un rôle socle dérivé qui reprend
 les permissions métier et écarte les permissions d'administration, plutôt que de l'attribuer tel quel.
@@ -109,6 +126,12 @@ Choisis un préfixe client court et tiens-le. Exemple avec `CLI` :
 | Sociétés autorisées | `self.company.id in (?)` | `__user__.companySet.id` |
 
 `self` désigne l'enregistrement, un `?` par paramètre, paramètres séparés par des virgules.
+
+**Syntaxe des paramètres à vérifier selon la version.** La forme `__user__.companySet.id` est
+celle des preuves sur AOP 7.x. La documentation AOS 8.5 montre une variante avec `.plus(0)`
+(extraction texte peu fiable du PDF officiel). Avant de livrer une condition sur une instance 8.x,
+relis la doc de la version exacte, ou copie une condition qui fonctionne déjà sur l'instance, puis
+teste-la sur un utilisateur dédié.
 Teste toujours une condition sur un utilisateur dédié avant de la généraliser : une condition
 invalide rend l'objet inaccessible ou lève une erreur serveur.
 

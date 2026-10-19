@@ -13,6 +13,10 @@
 | Tester avec un compte admin | Toujours « autorisé » | Compte de test dédié, hors du groupe `admins` |
 | Renommer le code du groupe `admins` | Retire le contournement administrateur, sans message | Ne jamais y toucher |
 | Rôle nommé `Read` qui autorise l'écriture | Le nom ment, l'audit passe à côté | Vérifier le contenu réel, pas le nom |
+| Croire qu'un rôle `Read` est transverse | `Base Read (sans menu)` ne couvre que `com.axelor.apps.base.db.*` : l'ajouter pour un refus sur un objet RH n'a aucun effet | Chercher le rôle `<Entité> Read` du package de l'objet refusé |
+| Attribuer le rôle complet pour débloquer des données | L'utilisateur récupère aussi les menus du module (ex. tout le menu RH) | Utiliser, ou créer, la variante `X Read (sans menu)` |
+| Croire qu'un menu accessible donne accès aux données | L'erreur tombe après l'ouverture du menu, sur un autre modèle | Repartir de l'appel réseau en échec, pas du menu |
+| Cliquer sur « + » dans l'onglet Autorisations d'un rôle pour une permission qui existe déjà | Violation de la contrainte d'unicité du nom de permission | Utiliser la loupe pour rattacher l'existante ; « + » seulement pour une permission réellement nouvelle |
 
 ## Menus
 

@@ -121,7 +121,16 @@ l'accès**. Modèle dans `references/tests.md`.
 - **Cherche en base ET dans le code.** Une permission, un rôle, un menu ou un champ peut exister
   en base via Studio ou un import, sans trace dans le dépôt. Ne conclus jamais « absent » sans
   avoir regardé des deux côtés.
+- **Ne suppose jamais qu'un rôle `Read` est transverse.** Un rôle `<Module> Read` ne couvre que
+  les packages qu'il cible : `Base Read` ne donne rien sur les objets RH, projet ou stock. Avant
+  d'affirmer qu'un rôle couvre un module ou une entité, vérifie son contenu réel (permissions,
+  objets, jokers) en base ou dans la doc de la version, ou demande cette vérification.
 - **Le code prime sur la documentation.** En cas de contradiction, le code gagne et tu notes l'écart.
+- **Position assumée face à la doc Axelor.** La documentation officielle présente les rôles
+  `Read` comme « lecture seule » et l'ajout de permissions ou de menus directement sur le groupe
+  comme une pratique normale. Ce skill s'en écarte volontairement : un rôle nommé `Read` peut
+  contenir des droits d'écriture (vérifier le contenu, pas le nom), et un droit posé sur le groupe
+  échappe à l'audit par rôle. Quand tu t'écartes de la doc, dis-le explicitement au client.
 - **Ne conclus jamais sur une simple comparaison de deux groupes.** Un groupe hérite de ses rôles,
   qui héritent de permissions et de menus : la différence visible n'est presque jamais la cause.
 - **Un export n'est pas la base.** Vérifie sa complétude avant de t'appuyer dessus : compare les

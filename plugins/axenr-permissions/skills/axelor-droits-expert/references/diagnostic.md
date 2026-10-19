@@ -9,6 +9,22 @@ compte du groupe de code `admins`, contourne le moteur de droits : il répondra 
 Si tu ne peux pas emprunter le compte, crée un compte de test avec exactement le même groupe et les
 mêmes rôles, et reconnecte-toi.
 
+## Paliers d'investigation
+
+Ordre général face à un problème : droits, puis configuration, puis documentation, puis code.
+Pour les droits eux-mêmes, monte les paliers dans l'ordre, sans en sauter :
+
+| Palier | Outil | Ce qu'on cherche | Accord requis |
+|---|---|---|---|
+| 1 | DevTools du navigateur, onglet Réseau | L'appel en échec et le modèle refusé (voir A) | Non |
+| 2 | SQL en lecture seule sur `auth_group`, `auth_role`, `auth_permission` et leurs tables de jointure | Qui porte quoi, réellement, en base | Non (lecture seule) |
+| 3 | Logs serveur en DEBUG | La décision du moteur, ligne par ligne | **Oui, feu vert explicite** |
+
+Pour le palier 3 : logger `com.axelor.auth=TRACE` pour voir les refus d'écriture ; l'exception à
+chercher dans les logs est `com.axelor.auth.AuthSecurityException`. La configuration se fait dans
+`axelor-config.properties` (pas dans un `application.properties`). Remets le niveau de log
+d'origine après le diagnostic.
+
 ## Arbre de décision
 
 ```
@@ -44,6 +60,24 @@ Symptôme
    que l'écran tente de modifier au chargement.
 5. **Cas de la relation.** Si l'écran s'ouvre mais échoue en affichant un champ relationnel,
    le modèle refusé est celui **de la cible**, pas celui de l'écran. C'est le motif du socle commun.
+6. **Accès au menu ne veut pas dire lecture des données.** Un utilisateur peut voir et ouvrir un
+   menu, puis tomber sur l'erreur juste après : l'écran interroge d'autres modèles (par exemple un
+   planning qui lit les employés). Le menu est accordé, la donnée ne l'est pas. Repars de l'appel
+   réseau, jamais du libellé du menu.
+
+### Méthode courte en 8 étapes (refus d'accès sur un objet)
+
+1. Reproduire avec le compte concerné, ou un compte de test identique, jamais un admin.
+2. Repérer l'appel réseau en échec et noter le modèle exact de l'URL.
+3. Lire son package réel dans `meta_model` (`package_name`, `full_name`).
+4. Chercher dans Administration > Rôles le rôle `<Entité> Read`, et sa variante `(sans menu)`
+   si elle existe.
+5. Vérifier le contenu réel de ce rôle : une permission couvre-t-elle le modèle exact ou son
+   joker de package exact ? Ne pas se fier au nom du rôle.
+6. Attribuer au groupe la variante **sans menu** si l'utilisateur n'a besoin que des données ;
+   si elle n'existe pas, la créer (voir `conception.md`) plutôt que d'attribuer le rôle complet.
+7. Déconnexion, reconnexion, re-test de l'accès **et** des refus attendus.
+8. Retirer les rôles de dépannage, puis documenter la cause racine et le correctif.
 
 ## B. Menu absent
 
@@ -100,3 +134,16 @@ appartenir à un objet lié, et une règle champ posée sur le mauvais modèle n
 - **Retire les rôles ajoutés pendant le diagnostic.** Un rôle de dépannage laissé en place est une
   faille durable, et il peut annuler une condition JPQL ailleurs.
 - Note la cause racine, pas seulement la correction.
+
+## Avant toute modification en production
+
+À cocher avant d'appliquer le correctif sur l'environnement de production (avec GO explicite) :
+
+- [ ] Correctif validé sur recette avec un compte de test du même groupe, après reconnexion.
+- [ ] Variante `(sans menu)` utilisée quand seules les données sont nécessaires : aucun menu
+      inattendu n'apparaît pour le profil.
+- [ ] Aucun rôle standard modifié : rôle dérivé créé si besoin.
+- [ ] Aucune permission sans condition ajoutée sur un modèle déjà restreint par une condition
+      JPQL dans le même groupe (règle d'or 4).
+- [ ] Utilisateurs concernés prévenus de la reconnexion nécessaire.
+- [ ] Ticket documenté avec la cause racine et le correctif.
