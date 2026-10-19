@@ -1,0 +1,18 @@
+{
+  "name": "axenr-pm",
+  "version": "2.2.0",
+  "description": "Pilotage de projet AxENR : redaction et organisation des tickets Jira, priorisation de la charge, suivi des temps et facturation, audit client ERP, annonces de version.",
+  "author": {
+    "name": "AxENR",
+    "email": "f.benomar@erp-axenr.fr"
+  },
+  "homepage": "https://github.com/ERP-AxENR/Axenr-marketplace",
+  "repository": "https://github.com/ERP-AxENR/Axenr-marketplace",
+  "keywords": [
+    "axenr",
+    "jira",
+    "pilotage",
+    "facturation",
+    "audit"
+  ]
+}
