@@ -1,7 +1,7 @@
 {
   "name": "axenr-gmao",
   "version": "2.1.0",
-  "description": "GMAO AxENR : capacites reelles de la solution (standard, parametrage, roadmap, specifique) pour qualifier un besoin ou repondre a un appel d'offres.",
+  "description": "GMAO AxENR : capacites reelles de la solution (standard, parametrage, roadmap, specifique) pour qualifier un besoin ou repondre a un appel d'offres, et creation des questionnaires d'intervention.",
   "author": {
     "name": "AxENR",
     "email": "f.benomar@erp-axenr.fr"

@@ -32,7 +32,7 @@
     {
       "name": "axenr-gmao",
       "source": "./plugins/axenr-gmao",
-      "description": "GMAO AxENR : capacites reelles de la solution (standard, parametrage, roadmap, specifique) pour qualifier un besoin ou repondre a un appel d'offres.",
+      "description": "GMAO AxENR : capacites reelles de la solution (standard, parametrage, roadmap, specifique) pour qualifier un besoin ou repondre a un appel d'offres, et creation des questionnaires d'intervention.",
       "version": "2.1.0",
       "author": {
         "name": "AxENR",
@@ -43,7 +43,7 @@
     {
       "name": "axenr-data",
       "source": "./plugins/axenr-data",
-      "description": "Donnees AxENR : imports et exports Axelor, templates Word (XDocReport et Carbone), modeles de mail Axelor, architecture BI Superset.",
+      "description": "Donnees AxENR : imports et exports Axelor (import classique, edition entreprise, data-init), donnees de demo, templates Word (XDocReport et Carbone), modeles de mail Axelor, architecture BI Superset.",
       "version": "2.1.0",
       "author": {
         "name": "AxENR",
@@ -65,7 +65,7 @@
     {
       "name": "axenr-dev",
       "source": "./plugins/axenr-dev",
-      "description": "Developpement AxENR (Claude Code) : resolution de tickets auto-apprenante, revue de PR, montee de version, lecons partagees, outillage de la marketplace et integration hebdomadaire des notes d'amelioration.",
+      "description": "Developpement AxENR (Claude Code) : resolution de tickets auto-apprenante, revue de PR, montee de version, environnements Axelor jetables, connecteurs vers des outils tiers, lecons partagees, outillage de la marketplace et integration hebdomadaire des notes d'amelioration.",
       "version": "2.1.0",
       "author": {
         "name": "AxENR",

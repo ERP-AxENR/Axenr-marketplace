@@ -40,11 +40,13 @@ claude.ai, Cowork et Claude Code). Agents et commandes : axenr-dev seulement.
 | skill-improvement-note | skill | axenr-core | « Note-le pour le skill » : fiche d'amelioration -> ticket Jira AxENR Marketplace - Notre cerveau |
 | axenr-bareme-expert | skill | axenr-erp | Baremes tarifaires Axelor (moteur Pricing), catalogue en reference |
 | gmao-capabilities | skill | axenr-gmao | Capacites reelles GMAO : standard / parametrage / roadmap / specifique |
-| axelor-import-export | skill | axenr-data | Imports et exports Axelor, CORE MODEL, schemas en reference |
+| seeding-axelor-intervention-surveys | skill | axenr-gmao | Questionnaires d'intervention (checklist terrain, gamme de controle, PV) en bundle d'import |
+| axelor-import-export | skill | axenr-data | Imports et exports Axelor : ecran d'import, import classique (bind.xml), edition entreprise, data-init, CORE MODEL |
 | axenr-template-expert | skill | axenr-data | Templates Word XDocReport et Carbone (.docx prets a l'import), catalogue et references Carbone / Groovy / edition docx |
 | axelor-modeles-mail | skill | axenr-data | Modeles de mail Axelor (StringTemplate) : creation, test, pieces jointes, depannage |
+| demo-data-generator | skill | axenr-data | Donnees de demo credibles : cadrage du scenario, SQL idempotent, REST ou bundle, audit |
 | axenr-bi-architect | skill | axenr-data | Requetes SQL PostgreSQL + dashboards Superset, catalogue en reference |
-| axelor-droits-expert | skill | axenr-permissions | Matrice de droits, import, audit, diagnostic |
+| axelor-droits-expert | skill | axenr-permissions | Cadrage et creation de profils, matrice de droits, import, audit, diagnostic |
 | erp-consultant-enr | agent | axenr-dev | Consultant ERP ENR appele par le ticket-solver (genericite, temporalite) |
 | ticket-solver-agent | agent | axenr-dev | Resolution autonome de tickets avec auto-apprentissage |
 | pr-reviewer-axenr | agent | axenr-dev | Review PR (axelor:code-reviewer + checks AxENR) |
@@ -53,6 +55,8 @@ claude.ai, Cowork et Claude Code). Agents et commandes : axenr-dev seulement.
 | axenr-dev-validator, migration-validator | skills | axenr-dev | Validations dev et migrations |
 | marketplace-doctor | skill | axenr-dev | Audit de sante de la marketplace |
 | weekly-skill-integration | skill | axenr-dev | « Integre les notes de la semaine » : fiches Jira -> PR hebdomadaire |
+| provisioning-axelor-environments | skill | axenr-dev | Environnements Axelor isoles ou assembles de zero, sondes, audit de derive |
+| building-axelor-integrations | skill | axenr-dev | Connecteurs Axelor vers outils tiers : cadrage, emulateur, client REST, chiffrage |
 
 ### Commandes (axenr-dev, Claude Code)
 

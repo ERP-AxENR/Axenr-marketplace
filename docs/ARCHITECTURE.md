@@ -35,10 +35,10 @@ La famille est declaree dans `.claude-plugin/marketplace.json` (champ
 |---|---|---|
 | `axenr-core` | socle | Coherence ENR, detection du client, charte graphique (`axenr-brand`), « Note-le pour le skill » (consultant ENR en skill : a venir, fusion des 6 exemplaires) |
 | `axenr-erp` | fonctionnel | `axenr-bareme-expert` : baremes et moteur Pricing |
-| `axenr-gmao` | fonctionnel | Capacites reelles de la GMAO (standard, parametrage, roadmap, specifique) |
-| `axenr-data` | fonctionnel | `axelor-import-export`, `axenr-template-expert`, `axelor-modeles-mail`, `axenr-bi-architect` |
+| `axenr-gmao` | fonctionnel | Capacites reelles de la GMAO (standard, parametrage, roadmap, specifique), questionnaires d'intervention |
+| `axenr-data` | fonctionnel | `axelor-import-export`, `axenr-template-expert`, `axelor-modeles-mail`, `axenr-bi-architect`, `demo-data-generator` |
 | `axenr-permissions` | fonctionnel | Matrice de droits, import, audit, diagnostic |
-| `axenr-dev` | technique | Ticket-solver et son consultant ENR, revue de PR, montee de version, lecons, outillage de la marketplace, integration du vendredi |
+| `axenr-dev` | technique | Ticket-solver et son consultant ENR, revue de PR, montee de version, environnements jetables, connecteurs tiers, lecons, outillage de la marketplace, integration du vendredi |
 | `axelor` | technique | Plugin du partenaire Axelor, non modifie |
 
 ## Qui installe quoi
