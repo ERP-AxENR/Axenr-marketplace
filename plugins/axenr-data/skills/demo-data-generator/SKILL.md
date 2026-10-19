@@ -43,6 +43,8 @@ séquences et affiche le SQL de retour arrière : conserver sa sortie.
   chaleur ; CRM, suivi d'affaire (modèles d'affaire, tâches, jalons administratifs), GMAO
   (installations, contrats de maintenance, interventions). Le vocabulaire, les gammes et les
   délais du scénario viennent de ce métier, jamais d'un secteur générique.
+- GMAO : le site est porté par le **tiers**, la racine du parc est l'installation, et tout
+  équipement mono-produit a sa ligne d'équipement (`references/entites-gmao.md`, pièges 222 et 223).
 - Vraisemblance métier : s'appuyer sur `enr-coherence-checker` (une donnée au bon moment du
   cycle commercial, généricité multi-ENR) pour valider le contrat de scénario avant la Phase 2.
 - Bundles d'import (voie sans accès base) : renvoyer vers `axelor-import-export` pour le
@@ -345,6 +347,7 @@ par besoin puis par phase (le workflow porte aussi ses renvois directement).
 | CRM : leads, opportunités, événements, motifs de perte | `references/entites-crm.md` |
 | Stock : mouvements, emplacements, quantités, chaîne de réception | `references/entites-stock.md` |
 | Qualité : gammes et relevés de contrôle, améliorations qualité (AQ), processus, audits, alertes | `references/entites-qualite.md` |
+| GMAO : parc d'équipements, contrats de maintenance, lignes de planification, interventions | `references/entites-gmao.md` |
 | Tableaux de bord, graphiques ou indicateurs de l'application mobile, accueil du téléphone, vues web | `references/tableaux-de-bord-mobiles.md` |
 | **Remplir une fiche Tiers, Contact ou Article à 100 % de ce que l'écran affiche** (onglets, listes, tableaux de bord, réalisme par type de fiche, options d'app qui ajoutent des blocs) | `references/surface-tiers-articles.md`, mesure par `scripts/form_coverage.py` |
 | Photos d'articles, logos de sociétés (visuels sobres, jamais par-dessus une image existante) | `scripts/generate_visuals.py`, `references/surface-tiers-articles.md` §9 |
@@ -359,7 +362,7 @@ par besoin puis par phase (le workflow porte aussi ses renvois directement).
 |---|---|
 | Phase 1 — Contrat | `references/cadrage-scenario.md` (méthode et format du contrat) ; `references/mode-b-volume.md` §1 si Mode B (instruire le métier) |
 | Phase 2 — Dérivation | `references/socle-aos-baseline.md`, `references/socle-b-shape.md`, `references/methode-introspection.md` |
-| Phase 3 — Construire | `references/methode-introspection.md` avant d'écrire, `references/methode-ecriture-sql.md` pour l'architecture, `references/methode-dates.md` pour poser les dates, la ou les fiches `entites-*.md` du domaine visé (tiers-contacts, produits, **ventes**, **projet-temps**, **achats**, **crm**, **stock**, qualite, production-btp, autres), `references/surface-tiers-articles.md` dès qu'une fiche Tiers ou Article doit être complète, `references/csv-xml-bundle.md` si bundle |
+| Phase 3 — Construire | `references/methode-introspection.md` avant d'écrire, `references/methode-ecriture-sql.md` pour l'architecture, `references/methode-dates.md` pour poser les dates, la ou les fiches `entites-*.md` du domaine visé (tiers-contacts, produits, **ventes**, **projet-temps**, **achats**, **crm**, **stock**, qualite, **gmao**, production-btp, autres), `references/surface-tiers-articles.md` dès qu'une fiche Tiers ou Article doit être complète, `references/csv-xml-bundle.md` si bundle |
 | Phase 4 — Auditer | `scripts/form_coverage.py` sur chaque fiche créée ou étoffée (dimension 14), `references/methode-audit.md`, `references/methode-coherence.md`, `references/methode-dates.md` §6 pour l'audit temporel, `references/methode-rejouabilite.md` si le jeu doit être rejoué sur base vierge, `references/methode-rejeu-controle.md` s'il doit être rejoué par l'API sur une instance sans accès base |
 
 ---

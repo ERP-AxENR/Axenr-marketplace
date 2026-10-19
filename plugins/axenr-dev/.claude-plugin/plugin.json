@@ -1,6 +1,6 @@
 {
   "name": "axenr-dev",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Developpement AxENR (Claude Code) : resolution de tickets auto-apprenante, revue de PR, montee de version, environnements Axelor jetables, connecteurs vers des outils tiers, lecons partagees, outillage de la marketplace et integration hebdomadaire des notes d'amelioration.",
   "author": {
     "name": "AxENR",

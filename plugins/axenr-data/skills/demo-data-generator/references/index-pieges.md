@@ -1,6 +1,6 @@
 # Index des pièges — lookup par numéro
 
-223 entrées (n° 1 à 221, plus 6.bis et 11.bis). Chaque `methode-*.md` / `entites-*.md` ouvre en plus par la liste de ses propres pièges — cet index sert celui qui connaît déjà le numéro (ex. un rapport ou un message d'erreur qui cite `piège 76`).
+229 entrées (n° 1 à 227, plus 6.bis et 11.bis). Chaque `methode-*.md` / `entites-*.md` ouvre en plus par la liste de ses propres pièges — cet index sert celui qui connaît déjà le numéro (ex. un rapport ou un message d'erreur qui cite `piège 76`).
 
 | # | Titre | Fichier |
 |---|---|---|
@@ -227,3 +227,9 @@
 | 219 | Indicateurs descriptifs (comptages par statut) jugés sans valeur décisionnelle : partir des décisions à prendre | `references/tableaux-de-bord-mobiles.md` |
 | 220 | Graphique regroupé vide = masqué, sans message ; un indicateur sans regroupement affiche 0 | `references/tableaux-de-bord-mobiles.md` |
 | 221 | Vue web et « accès ERP » en « erreur 500 » au téléphone sans 500 serveur : contexte non sûr (`crypto.randomUUID`) | `references/tableaux-de-bord-mobiles.md` |
+| 222 | Le site, c'est le tiers : aucun équipement « Site X », la racine du parc est l'installation | `references/entites-gmao.md` |
+| 223 | Équipement mono-produit : toujours créer sa ligne d'équipement (quantité, numéro de suivi) | `references/entites-gmao.md` |
+| 224 | Contrat GMAO : activation par la chaîne d'actions de l'écran, suivre `pending` ; `firstPeriodEndDate` sinon `info` silencieux | `references/entites-gmao.md` |
+| 225 | Lignes de planification : rattacher toutes les installations, génération par lieu | `references/entites-gmao.md` |
+| 226 | Intervention : la planification par l'action de l'écran génère le questionnaire, pas le POST | `references/entites-gmao.md` |
+| 227 | Adresse : ville obligatoire, à créer si absente du référentiel | `references/entites-gmao.md` |
