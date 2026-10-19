@@ -1,6 +1,6 @@
 {
   "name": "axenr-data",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Donnees AxENR : imports et exports Axelor (import classique, edition entreprise, data-init), donnees de demo, templates Word (XDocReport et Carbone), modeles de mail Axelor, architecture BI Superset.",
   "author": {
     "name": "AxENR",
