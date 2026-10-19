@@ -1,0 +1,372 @@
+{
+  "description": "Exemple complet : trois agents de maintenance photovoltaique (technicien, expert onduleurs, expert modules) sur le module Intervention (Equipment). Deploye et teste sur demo-batimat (AOP 8) le 19/10/2026.",
+  "tools": [
+    {
+      "code": "pv_parc_synthese",
+      "name": "Parc PV : synthèse de toutes les centrales",
+      "description": "Synthèse côté serveur de TOUTES les centrales photovoltaïques suivies (lieux racines du module Intervention) : client, adresse, puissance crête et d'injection, date de mise en service, contrat, productible, nombre d'onduleurs, matériels à l'arrêt, alarmes actives, garanties expirées ou expirant sous 90 jours, prochaine maintenance. Lecture seule.\nQuand l'appeler : « point du matin », « état de mon parc », « quelles centrales ont un problème », « combien de kWc je suis », toute question qui compare ou liste les centrales. Entrée : {}.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "prelude_files": [
+        "tools/common.js"
+      ],
+      "script_file": "tools/pv_parc_synthese.js"
+    },
+    {
+      "code": "pv_fiche_equipement",
+      "name": "Parc PV : fiche complète d'un équipement ou d'une centrale",
+      "description": "Rend la fiche complète d'UN équipement ou d'UNE centrale : identité, client, emplacement (centrale > tranche), mise en service, garantie pièces avec jours restants, toutes les caractéristiques techniques (fabricant, modèle, n° de série, puissance, firmware, IP, MPPT, configuration strings, dernière alarme, dates de maintenance, fiche technique constructeur, PDL, contrat, contact, accès), les sous-éléments et l'historique des interventions (journal). Lecture seule.\nEntrée : {\"equipement\": \"<code ex. CPV02-OND2, n° de série, ou mots du nom / client / marque, ex. 'durand onduleur', 'garrigues B3'>\"}. Recherche tolérante (accents, casse, mots partiels : tous les mots doivent se retrouver). Si plusieurs fiches correspondent : {ambigu: true, candidats: [...]} → reformuler ou faire choisir par ask_to_select, ne jamais choisir au hasard. Si aucune : {introuvable: true}.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "equipement": {
+            "type": "string",
+            "description": "Code, n° de série ou mots du nom/client/marque"
+          }
+        },
+        "required": [
+          "equipement"
+        ],
+        "additionalProperties": false
+      },
+      "prelude_files": [
+        "tools/common.js"
+      ],
+      "script_file": "tools/pv_fiche_equipement.js"
+    },
+    {
+      "code": "pv_garanties",
+      "name": "Parc PV : garanties expirées ou à échéance",
+      "description": "Liste les matériels dont la garantie pièces expire dans l'horizon donné et ceux déjà hors garantie, triés par date, avec client, centrale, n° de série et conditions de garantie (standard, extension). Lecture seule.\nQuand l'appeler : « quelles garanties expirent », « quels onduleurs sont hors garantie », « que dois-je proposer en extension », « est-ce que tel matériel est encore garanti ». Entrée : {\"horizon_jours\": 90 (défaut), \"inclure_expirees\": true (défaut), \"filtre\": \"optionnel : marque, modèle, client, centrale ou famille, ex. 'huawei', 'onduleur', 'garrigues'\"}.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "horizon_jours": {
+            "type": "integer",
+            "description": "Nombre de jours à venir (défaut 90)"
+          },
+          "inclure_expirees": {
+            "type": "boolean",
+            "description": "Inclure les garanties déjà expirées (défaut true)"
+          },
+          "filtre": {
+            "type": "string",
+            "description": "Filtre texte optionnel"
+          }
+        },
+        "additionalProperties": false
+      },
+      "prelude_files": [
+        "tools/common.js"
+      ],
+      "script_file": "tools/pv_garanties.js"
+    },
+    {
+      "code": "pv_alarmes_arrets",
+      "name": "Parc PV : matériels à l'arrêt et alarmes actives",
+      "description": "Liste les matériels hors service (à l'arrêt) et ceux en fonctionnement avec une alarme active, avec centrale, client, marque/modèle, libellé exact de l'alarme, statut de garantie et dernière intervention du journal. Lecture seule.\nQuand l'appeler : « qu'est-ce qui est en panne », « quelles alarmes », « priorise mes interventions », « tournée de dépannage ». Entrée : {}.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "prelude_files": [
+        "tools/common.js"
+      ],
+      "script_file": "tools/pv_alarmes_arrets.js"
+    }
+  ],
+  "skills": [
+    {
+      "code": "pv-parc-donnees",
+      "name": "Parc PV : données Axelor et gestes d'écriture",
+      "description": "À charger dès qu'il faut lire ou écrire une donnée du parc photovoltaïque : centrale, tranche, onduleur, module, garantie, journal d'intervention ; et AVANT toute écriture : « consigne », « note dans le journal », « mets à l'arrêt », « remets en service », « crée l'onduleur de remplacement », « ajoute une batterie ».",
+      "sortOrder": 10,
+      "instructions_file": "skills/pv-parc-donnees.md",
+      "references": [
+        {
+          "name": "donnees-parc",
+          "title": "Où sont les données du parc PV",
+          "file": "knowledge/donnees-parc.md"
+        },
+        {
+          "name": "ecrire-dans-le-parc",
+          "title": "Écrire : journal, état, création de matériel",
+          "file": "knowledge/ecrire-dans-le-parc.md"
+        }
+      ]
+    },
+    {
+      "code": "pv-diagnostic-methode",
+      "name": "Méthode de diagnostic du technicien PV",
+      "description": "À charger pour tout diagnostic de panne, toute alarme, toute baisse de production ou tout « que dois-je faire ? » : donne la méthode en 7 temps (identifier, qualifier, hypothèses, mesures, action, garantie, tracer) et les règles de confiance.",
+      "sortOrder": 9,
+      "instructions_file": "skills/pv-diagnostic-methode.md",
+      "references": []
+    },
+    {
+      "code": "pv-onduleurs-huawei",
+      "name": "Onduleurs Huawei SUN2000 / LUNA / SmartLogger",
+      "description": "À charger pour toute question sur un onduleur, une batterie, un optimiseur ou une supervision Huawei : « alarme 2062 », « code 2032 / 2034 », « SUN2000 », « LUNA2000 », « SmartLogger », « FusionSolar », « dongle hors ligne », « isolement », « Smart I-V », « firmware Huawei », « garantie Huawei / RMA ». Donne les alarmes, les procédures et des cas terrain.",
+      "sortOrder": 11,
+      "instructions_file": "skills/pv-onduleurs-huawei.md",
+      "references": [
+        {
+          "name": "huawei-alarmes",
+          "title": "Alarmes Huawei SUN2000 : ID, causes, diagnostic",
+          "file": "knowledge/huawei-alarmes.md"
+        },
+        {
+          "name": "huawei-procedures",
+          "title": "Procédures terrain Huawei (isolement, I-V, firmware, code réseau, RMA, garanties)",
+          "file": "knowledge/huawei-procedures.md"
+        },
+        {
+          "name": "huawei-cas-terrain",
+          "title": "Cas terrain Huawei tirés des forums",
+          "file": "knowledge/huawei-cas-terrain.md"
+        }
+      ]
+    },
+    {
+      "code": "pv-onduleurs-sma-fronius",
+      "name": "Onduleurs SMA et Fronius, réseau France",
+      "description": "À charger pour toute question sur un onduleur SMA (Sunny Tripower, Data Manager, Sunny Portal) ou Fronius (Symo, Solar.web), sur un numéro d'événement SMA ou un code d'état Fronius, ou sur le réseau : découplage, surtension réseau, décrochage, réglage Enedis, Q(U), maintenance préventive d'un onduleur, PR et disponibilité.",
+      "sortOrder": 12,
+      "instructions_file": "skills/pv-onduleurs-sma-fronius.md",
+      "references": [
+        {
+          "name": "sma-evenements",
+          "title": "Événements SMA STP CORE1 : numéros, causes, actions",
+          "file": "knowledge/sma-evenements.md"
+        },
+        {
+          "name": "fronius-codes",
+          "title": "Codes d'état Fronius Symo : causes, actions, garantie",
+          "file": "knowledge/fronius-codes.md"
+        },
+        {
+          "name": "reseau-france-et-onduleurs",
+          "title": "Réseau France, découplage, décrochages, maintenance onduleur",
+          "file": "knowledge/reseau-france-et-onduleurs.md"
+        }
+      ]
+    },
+    {
+      "code": "pv-modules-champ",
+      "name": "Modules PV et champ photovoltaïque",
+      "description": "À charger pour toute question sur les modules ou le champ PV : hotspot, diode bypass, PID, LID/LeTID, microfissures, délamination, snail trails, encrassement, nettoyage, ombrage, connecteurs MC4, thermographie (rapport, ΔT, criticité), électroluminescence, courbe I-V, Voc/Isc par string, isolement, garantie produit et performance, réclamation fabricant, perte de production.",
+      "sortOrder": 13,
+      "instructions_file": "skills/pv-modules-champ.md",
+      "references": [
+        {
+          "name": "modules-defauts",
+          "title": "Défauts des modules : signature, cause, criticité, action, garantie",
+          "file": "knowledge/modules-defauts.md"
+        },
+        {
+          "name": "champ-pv-mesures",
+          "title": "Mesures sur le champ PV : Voc/Isc, isolement, I-V, thermographie, nettoyage, garanties",
+          "file": "knowledge/champ-pv-mesures.md"
+        }
+      ]
+    },
+    {
+      "code": "pv-om-reglementation",
+      "name": "Maintenance O&M et réglementation France",
+      "description": "À charger pour une question de maintenance préventive (checklist, périodicité, KPI), de sécurité (habilitation BR/BP photovoltaïque, travaux en hauteur, ligne de vie, coupure pompiers), de réglementation (NF C 15-100 7-712, UTE C15-712-1, Consuel, parafoudres), d'assurance ou de contrat d'obligation d'achat EDF OA.",
+      "sortOrder": 14,
+      "instructions_file": "skills/pv-om-reglementation.md",
+      "references": [
+        {
+          "name": "om-reglementation-france",
+          "title": "O&M, sécurité et réglementation France, cas terrain",
+          "file": "knowledge/om-reglementation-france.md"
+        }
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "code": "pv-expert-onduleurs",
+      "name": "Expert onduleurs PV",
+      "audience": "BUSINESS",
+      "toolPolicy": "AUTO",
+      "model_code": "anthropic/claude-sonnet-5",
+      "maxSteps": 20,
+      "maxOutputTokens": 8000,
+      "isEnabled": true,
+      "isDefault": false,
+      "sortOrder": 21,
+      "allowedModels": "* !create !update !delete",
+      "systemPrompt_file": "prompts/pv-expert-onduleurs.md",
+      "suggestions": [
+        "Huawei SUN2000-100KTL : alarme 2062 tous les matins jusqu'à 10 h, qu'est-ce que je mesure ?",
+        "Fronius Symo en code 102 l'après-midi en été, cause et solution ?",
+        "SMA STP 50-41 en derating avec l'événement 8001 : que faire ?",
+        "Comment changer le code réseau d'un SUN2000 pour la France ?"
+      ],
+      "tools": [
+        "pv_parc_synthese",
+        "pv_fiche_equipement",
+        "pv_garanties",
+        "pv_alarmes_arrets",
+        "search_records",
+        "read_record",
+        "describe_model",
+        "open_view",
+        "get_active_form_data",
+        "ask_to_select",
+        "ask_to_input",
+        "use_skill",
+        "current_user",
+        "calculate"
+      ],
+      "skills": [
+        "pv-onduleurs-huawei",
+        "pv-onduleurs-sma-fronius",
+        "pv-diagnostic-methode",
+        "pv-parc-donnees"
+      ],
+      "groups": [
+        "admins",
+        "templateUsers",
+        "users",
+        "BPM",
+        "CST",
+        "CRM",
+        "ERP",
+        "VTE",
+        "ACH",
+        "CPT",
+        "HRM",
+        "OPS",
+        "MGT",
+        "DAF"
+      ]
+    },
+    {
+      "code": "pv-expert-modules",
+      "name": "Expert modules et champ PV",
+      "audience": "BUSINESS",
+      "toolPolicy": "AUTO",
+      "model_code": "anthropic/claude-sonnet-5",
+      "maxSteps": 20,
+      "maxOutputTokens": 8000,
+      "isEnabled": true,
+      "isDefault": false,
+      "sortOrder": 22,
+      "allowedModels": "* !create !update !delete",
+      "systemPrompt_file": "prompts/pv-expert-modules.md",
+      "suggestions": [
+        "Thermographie : un module à +25 °C par rapport à ses voisins, criticité et action ?",
+        "Comment distinguer une diode bypass HS d'un hotspot sur une courbe I-V ?",
+        "Sur la centrale des Garrigues, quelle Voc dois-je mesurer sur un string de 13 modules à 10 °C ?",
+        "Le client veut nettoyer ses modules au Kärcher : qu'est-ce que je lui réponds ?"
+      ],
+      "tools": [
+        "pv_parc_synthese",
+        "pv_fiche_equipement",
+        "pv_garanties",
+        "pv_alarmes_arrets",
+        "search_records",
+        "read_record",
+        "describe_model",
+        "open_view",
+        "get_active_form_data",
+        "ask_to_select",
+        "ask_to_input",
+        "use_skill",
+        "current_user",
+        "calculate"
+      ],
+      "skills": [
+        "pv-modules-champ",
+        "pv-om-reglementation",
+        "pv-diagnostic-methode",
+        "pv-parc-donnees"
+      ],
+      "groups": [
+        "admins",
+        "templateUsers",
+        "users",
+        "BPM",
+        "CST",
+        "CRM",
+        "ERP",
+        "VTE",
+        "ACH",
+        "CPT",
+        "HRM",
+        "OPS",
+        "MGT",
+        "DAF"
+      ]
+    },
+    {
+      "code": "pv-technicien-maintenance",
+      "name": "Technicien de maintenance PV",
+      "audience": "BUSINESS",
+      "toolPolicy": "AUTO",
+      "model_code": "anthropic/claude-sonnet-5",
+      "maxSteps": 30,
+      "maxOutputTokens": 8000,
+      "isEnabled": true,
+      "isDefault": false,
+      "sortOrder": 20,
+      "allowedModels": "com.axelor.apps.intervention.db.Equipment !delete\ncom.axelor.mail.db.MailMessage !update !delete\n* !create !update !delete",
+      "systemPrompt_file": "prompts/pv-technicien-maintenance.md",
+      "suggestions": [
+        "Point du matin : qu'est-ce que je dois traiter en priorité sur le parc ?",
+        "L'onduleur B3 des Garrigues est à l'arrêt : qu'est-ce qu'il a et qu'est-ce que je dois emporter pour l'intervention ?",
+        "Quelles garanties expirent dans les 3 mois et qu'est-ce que je propose au client ?",
+        "Le GAEC des Trois Chênes a perdu 15 % de production cette année : diagnostic ?"
+      ],
+      "tools": [
+        "create_record",
+        "update_record",
+        "pv_parc_synthese",
+        "pv_fiche_equipement",
+        "pv_garanties",
+        "pv_alarmes_arrets",
+        "search_records",
+        "read_record",
+        "describe_model",
+        "open_view",
+        "get_active_form_data",
+        "ask_to_select",
+        "ask_to_input",
+        "use_skill",
+        "current_user",
+        "calculate"
+      ],
+      "skills": [
+        "pv-diagnostic-methode",
+        "pv-parc-donnees",
+        "pv-onduleurs-huawei",
+        "pv-onduleurs-sma-fronius",
+        "pv-modules-champ",
+        "pv-om-reglementation"
+      ],
+      "groups": [
+        "admins",
+        "templateUsers",
+        "users",
+        "BPM",
+        "CST",
+        "CRM",
+        "ERP",
+        "VTE",
+        "ACH",
+        "CPT",
+        "HRM",
+        "OPS",
+        "MGT",
+        "DAF"
+      ]
+    }
+  ]
+}

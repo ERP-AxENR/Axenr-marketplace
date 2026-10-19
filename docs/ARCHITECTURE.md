@@ -21,7 +21,7 @@ technique, un plugin ne contient que des skills.
 | Famille | Pour qui | Outil principal | Plugins |
 |---|---|---|---|
 | **socle** | Tout le monde | claude.ai, Cowork, Claude Code | `axenr-core` |
-| **technique** | Developpeurs | Claude Code | `axenr-dev`, `axelor` (partenaire) |
+| **technique** | Developpeurs | Claude Code | `axenr-dev`, `axenr-ai`, `axelor` (partenaire) |
 | **fonctionnel** | Consultants ERP et GMAO | claude.ai, Cowork | `axenr-erp`, `axenr-gmao`, `axenr-data`, `axenr-permissions` |
 | **support** | Pilotage, chefs de projet, marketing | claude.ai, Cowork | `axenr-pm`, `axenr-marketing` (a venir) |
 | *client* | Equipe du client concerne | Tous | `client-<nom>` (a venir) |
@@ -39,13 +39,14 @@ La famille est declaree dans `.claude-plugin/marketplace.json` (champ
 | `axenr-data` | fonctionnel | `axelor-import-export`, `axenr-template-expert`, `axelor-modeles-mail`, `axenr-bi-architect`, `demo-data-generator` |
 | `axenr-permissions` | fonctionnel | Matrice de droits, import, audit, diagnostic |
 | `axenr-dev` | technique | Ticket-solver et son consultant ENR, revue de PR, montee de version, environnements jetables, connecteurs tiers, lecons, outillage de la marketplace, integration du vendredi |
+| `axenr-ai` | technique | `building-axelor-ai-agents` : agents du module Axelor AI crees par API (outils serveur, base de connaissance sourcee, ecritures sous approbation, tests par l'API du chat) ; EnergIA plus tard |
 | `axelor` | technique | Plugin du partenaire Axelor, non modifie |
 
 ## Qui installe quoi
 
 | Profil | claude.ai et Cowork (Organization settings > Plugins & skills) | Claude Code |
 |---|---|---|
-| Developpeur | `axenr-core` | `axenr-core`, `axenr-dev`, `axelor`, et les plugins fonctionnels utiles au ticket |
+| Developpeur | `axenr-core` | `axenr-core`, `axenr-dev`, `axelor`, `axenr-ai` pour les agents Axelor AI, et les plugins fonctionnels utiles au ticket |
 | Consultant | `axenr-core` + plugins fonctionnels | Non utilise |
 | Pilotage et marketing | `axenr-core` + plugins support | Non utilise |
 | Equipe d'un client | + `client-<nom>` | + `client-<nom>` dans le depot du client |
@@ -96,7 +97,7 @@ en plus `client-systeko`.
 |---|---|---|
 | `axenr-pm` | support | Jira (organisateur, redaction de specs, expert), annonces de version, suivi des temps et facturation, priorisation |
 | `axenr-marketing` | support | Strategie marketing, CRM et leads, newsletters, LinkedIn, YouTube (lexique metier ENR, carte des douleurs), offres commerciales |
-| `axenr-ai` | technique | Axelor AI, et EnergIA quand le sujet reprendra |
+| `axenr-ai` (suite) | technique | EnergIA quand le sujet reprendra ; outils ACTION et MCP pour les agents Axelor AI |
 | `axenr-erp` (suite) | fonctionnel | Support fonctionnel AOS, modeles d'affaire, facture electronique, modules annexes |
 | `axenr-gmao` (suite) | fonctionnel | Planification de tournees, interventions, contrats |
 | `client-heliowatt`, `client-systeko`, `client-emeraude`, `client-planete-enr` | client | Skills et instructions propres a chaque client |

@@ -11,6 +11,7 @@
 
 # Technique : relu par Fadel.
 /plugins/axenr-dev/          @fbe-axenr
+/plugins/axenr-ai/           @fbe-axenr
 /plugins/axelor/             @fbe-axenr
 
 # Architecture et outillage.

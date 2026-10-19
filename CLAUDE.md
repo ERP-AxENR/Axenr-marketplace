@@ -24,6 +24,7 @@ axenr-marketplace/
     ├── axenr-data/                   # [fonctionnel] Import/export, templates XDocReport/Carbone, modeles de mail, BI Superset
     ├── axenr-permissions/            # [fonctionnel] Droits et permissions
     ├── axenr-dev/                    # [technique] Claude Code : ticket-solver, PR review, lecons, outillage
+    ├── axenr-ai/                     # [technique] Agents Axelor AI crees par API (EnergIA plus tard)
     └── axelor/                       # [technique] Partenaire Axelor (ne pas modifier)
 ```
 
@@ -57,6 +58,7 @@ claude.ai, Cowork et Claude Code). Agents et commandes : axenr-dev seulement.
 | weekly-skill-integration | skill | axenr-dev | « Integre les notes de la semaine » : fiches Jira -> PR hebdomadaire |
 | provisioning-axelor-environments | skill | axenr-dev | Environnements Axelor isoles ou assembles de zero, sondes, audit de derive |
 | building-axelor-integrations | skill | axenr-dev | Connecteurs Axelor vers outils tiers : cadrage, emulateur, client REST, chiffrage |
+| building-axelor-ai-agents | skill | axenr-ai | Agents Axelor AI (AOP 8) : methode, deploiement idempotent par spec, tests par l'API du chat, exemple maintenance PV |
 
 ### Commandes (axenr-dev, Claude Code)
 

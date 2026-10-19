@@ -13,7 +13,7 @@ partagee entre les consultants (claude.ai, Cowork) et les developpeurs
 
 | Profil | Ce que j'utilise | Plugins |
 |---|---|---|
-| Developpeur | Claude Code | `axenr-core`, `axenr-dev`, `axelor` (+ plugins fonctionnels au besoin) |
+| Developpeur | Claude Code | `axenr-core`, `axenr-dev`, `axelor` (+ `axenr-ai` pour les agents Axelor AI, + plugins fonctionnels au besoin) |
 | Consultant ERP / GMAO | claude.ai, Cowork | `axenr-core`, `axenr-erp`, `axenr-gmao`, `axenr-data`, `axenr-permissions` |
 | Pilotage, chef de projet, marketing | claude.ai, Cowork | `axenr-core` (+ plugins support a venir) |
 
@@ -26,6 +26,7 @@ l'organisation : rien a installer. La suite de ce README concerne Claude Code.
 /plugin marketplace add ERP-AxENR/Axenr-marketplace
 /plugin install axenr-core@fbe-axenr-Axenr-marketplace
 /plugin install axenr-dev@fbe-axenr-Axenr-marketplace
+/plugin install axenr-ai@fbe-axenr-Axenr-marketplace   # agents Axelor AI
 ```
 
 Puis `/plugin`, onglet **Installed**, pour verifier.
