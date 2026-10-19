@@ -1,6 +1,6 @@
 {
   "name": "axenr-ai",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Axelor AI pour AxENR (Claude Code) : conception, creation par API, test et livraison d'agents du module Axelor AI (AOP 8.x) avec outils serveur, base de connaissance en skills sourcees et ecritures sous approbation. EnergIA y sera range quand le sujet reprendra.",
   "author": {
     "name": "AxENR",
