@@ -23,7 +23,7 @@ l'organisation : rien a installer. La suite de ce README concerne Claude Code.
 ## Installation (Claude Code)
 
 ```
-/plugin marketplace add fbe-axenr/Axenr-marketplace
+/plugin marketplace add ERP-AxENR/Axenr-marketplace
 /plugin install axenr-core@fbe-axenr-Axenr-marketplace
 /plugin install axenr-dev@fbe-axenr-Axenr-marketplace
 ```

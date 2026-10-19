@@ -6,7 +6,7 @@ argument-hint: <pr-url>
 # /axenr-dev:review-pr
 
 > `<marketplace_path>` : clone de travail de la marketplace (depot git dont l'origin est
-> `fbe-axenr/Axenr-marketplace`), par exemple `/Users/macbook/Desktop/Projects/Axenr-marketplace`.
+> `ERP-AxENR/Axenr-marketplace`), par exemple `/Users/macbook/Desktop/Projects/Axenr-marketplace`.
 > Jamais la copie d'installation `~/.claude/plugins/marketplaces/...`. Si introuvable, demander le chemin.
 
 Usage :

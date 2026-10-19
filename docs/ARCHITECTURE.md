@@ -10,7 +10,7 @@ consultant ne doit pas tomber sur l'outillage Git.
 La marketplace vit sur GitHub et sert a la fois :
 - **claude.ai et Cowork** : Organization settings > Plugins & skills > Sync from
   GitHub ; les skills des plugins arrivent automatiquement apres chaque merge ;
-- **Claude Code** : `/plugin marketplace add fbe-axenr/Axenr-marketplace`, puis
+- **Claude Code** : `/plugin marketplace add ERP-AxENR/Axenr-marketplace`, puis
   installation des plugins.
 
 Seuls les skills fonctionnent des deux cotes. D'ou la regle : hors famille

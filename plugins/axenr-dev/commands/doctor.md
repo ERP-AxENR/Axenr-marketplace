@@ -6,7 +6,7 @@ argument-hint: [--strict]
 # /axenr-dev:doctor
 
 > `<marketplace_path>` : clone de travail de la marketplace (depot git dont l'origin est
-> `fbe-axenr/Axenr-marketplace`), par exemple `/Users/macbook/Desktop/Projects/Axenr-marketplace`.
+> `ERP-AxENR/Axenr-marketplace`), par exemple `/Users/macbook/Desktop/Projects/Axenr-marketplace`.
 > Jamais la copie d'installation `~/.claude/plugins/marketplaces/...`. Si introuvable, demander le chemin.
 
 Lance le skill marketplace-doctor et affiche le rapport.

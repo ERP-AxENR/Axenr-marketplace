@@ -19,7 +19,7 @@ Une branche, une PR par semaine. On ne merge jamais : Alexis relit et merge.
 
 ## 0. Preparer le depot
 
-- Travailler dans un **clone** de `fbe-axenr/Axenr-marketplace`, jamais dans
+- Travailler dans un **clone** de `ERP-AxENR/Axenr-marketplace`, jamais dans
   `~/.claude/plugins/marketplaces/...` (copie d'installation, ecrasee a chaque
   mise a jour).
 - `git switch main && git pull --ff-only`, puis
