@@ -9,3 +9,6 @@ __pycache__/
 .vscode/
 *.swp
 *.swo
+
+# Lecons locales par poste (curator model) : jamais commitees
+plugins/*/docs/lessons/LOCAL-LESSONS-*.md

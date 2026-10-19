@@ -1,21 +1,77 @@
 {
   "name": "axenr-marketplace",
-  "description": "AxENR internal marketplace - Self-learning agents for Axelor ERP and React Native mobile development",
-  "version": "1.17.0",
+  "description": "Marketplace interne AxENR : skills et agents metier ENR, ERP et GMAO pour les consultants (claude.ai, Cowork) et les developpeurs (Claude Code).",
+  "version": "2.1.0",
   "owner": {
     "name": "Fadel Benomar",
     "email": "f.benomar@erp-axenr.fr"
   },
   "plugins": [
     {
-      "name": "axenr",
-      "source": "./plugins/axenr",
-      "description": "Self-learning ticket resolution system with autonomous agents, skills, and commands for AxENR projects (Axelor ERP + React Native mobile). Curator-model shared lessons + dedicated agents for import/export, Word/XDocReport templates, Superset BI architecture, PR review, and ENR consultation. Multi-client context detection.",
-      "version": "1.17.0",
+      "name": "axenr-core",
+      "source": "./plugins/axenr-core",
+      "description": "Socle AxENR installe pour tous : consultant ERP ENR (genericite multi-ENR, coherence temporelle), detection du client courant, charte graphique officielle (logos, couleurs, polices) et remontee des apprentissages vers la marketplace (« Note-le pour le skill »).",
+      "version": "2.1.0",
       "author": {
-        "name": "Fadel Benomar",
+        "name": "AxENR",
         "email": "f.benomar@erp-axenr.fr"
-      }
+      },
+      "category": "socle"
+    },
+    {
+      "name": "axenr-erp",
+      "source": "./plugins/axenr-erp",
+      "description": "Fonctionnel ERP AxENR : baremes et moteur Pricing Axelor.",
+      "version": "2.1.0",
+      "author": {
+        "name": "AxENR",
+        "email": "f.benomar@erp-axenr.fr"
+      },
+      "category": "fonctionnel"
+    },
+    {
+      "name": "axenr-gmao",
+      "source": "./plugins/axenr-gmao",
+      "description": "GMAO AxENR : capacites reelles de la solution (standard, parametrage, roadmap, specifique) pour qualifier un besoin ou repondre a un appel d'offres, et creation des questionnaires d'intervention.",
+      "version": "2.1.0",
+      "author": {
+        "name": "AxENR",
+        "email": "f.benomar@erp-axenr.fr"
+      },
+      "category": "fonctionnel"
+    },
+    {
+      "name": "axenr-data",
+      "source": "./plugins/axenr-data",
+      "description": "Donnees AxENR : imports et exports Axelor (import classique, edition entreprise, data-init), donnees de demo, templates Word (XDocReport et Carbone), modeles de mail Axelor, architecture BI Superset.",
+      "version": "2.1.0",
+      "author": {
+        "name": "AxENR",
+        "email": "f.benomar@erp-axenr.fr"
+      },
+      "category": "fonctionnel"
+    },
+    {
+      "name": "axenr-permissions",
+      "source": "./plugins/axenr-permissions",
+      "description": "Droits et permissions Axelor pour AxENR : conception de matrice, fichier d'import, audit et diagnostic des refus d'acces.",
+      "version": "2.1.0",
+      "author": {
+        "name": "AxENR",
+        "email": "f.benomar@erp-axenr.fr"
+      },
+      "category": "fonctionnel"
+    },
+    {
+      "name": "axenr-dev",
+      "source": "./plugins/axenr-dev",
+      "description": "Developpement AxENR (Claude Code) : resolution de tickets auto-apprenante, revue de PR, montee de version, environnements Axelor jetables, connecteurs vers des outils tiers, lecons partagees, outillage de la marketplace et integration hebdomadaire des notes d'amelioration.",
+      "version": "2.1.0",
+      "author": {
+        "name": "AxENR",
+        "email": "f.benomar@erp-axenr.fr"
+      },
+      "category": "technique"
     },
     {
       "name": "axelor",
@@ -25,7 +81,8 @@
       "author": {
         "name": "Axelor AI Team",
         "email": "ai-team@axelor.com"
-      }
+      },
+      "category": "technique"
     }
   ]
 }

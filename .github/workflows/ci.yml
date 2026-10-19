@@ -24,8 +24,9 @@ jobs:
 
       - name: Validate JSON files
         run: |
-          python3 -c "import json; json.load(open('.claude-plugin/marketplace.json'))"
-          python3 -c "import json; json.load(open('plugins/axenr/.claude-plugin/plugin.json'))"
+          for f in .claude-plugin/marketplace.json plugins/*/.claude-plugin/plugin.json; do
+            python3 -c "import json, sys; json.load(open(sys.argv[1]))" "$f" || exit 1
+          done
 
   version-check:
     name: Version Bump Required
@@ -36,17 +37,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check if axenr plugin files changed but version not bumped
+      - name: Check if AxENR plugin files changed but version not bumped
         run: |
           BASE="${{ github.event.pull_request.base.sha }}"
           HEAD="${{ github.event.pull_request.head.sha }}"
 
-          PLUGIN_CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- 'plugins/axenr/agents/' 'plugins/axenr/skills/' 'plugins/axenr/commands/' | wc -l)
-          VERSION_CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- '.claude-plugin/marketplace.json' 'plugins/axenr/.claude-plugin/plugin.json' | wc -l)
+          PLUGIN_CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- 'plugins/' ':(exclude)plugins/axelor/' ':(exclude)plugins/*/.claude-plugin/plugin.json' | wc -l)
+          VERSION_CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- '.claude-plugin/marketplace.json' | wc -l)
 
           if [ "$PLUGIN_CHANGED" -gt 0 ] && [ "$VERSION_CHANGED" -eq 0 ]; then
-            echo "ERROR: plugins/axenr/ files changed but marketplace.json/plugin.json version not bumped."
-            echo "Run scripts/bump-version.sh to bump, or /axenr:bump-version in Claude Code."
+            echo "ERROR: AxENR plugin files changed but marketplace.json version not bumped."
+            echo "Run scripts/bump-version.sh to bump, or /axenr-dev:bump-version in Claude Code."
             exit 1
           fi
 
@@ -64,7 +65,7 @@ jobs:
           import re, sys, pathlib
           pat = re.compile('[\U0001F300-\U0001F6FF\U0001F900-\U0001F9FF\U0001FA70-\U0001FAFF\U00002600-\U000027BF\U0001F1E0-\U0001F1FF]')
           found = False
-          for p in pathlib.Path('plugins/axenr').rglob('*.md'):
+          for p in (q for d in pathlib.Path('plugins').iterdir() if d.name != 'axelor' for q in d.rglob('*.md')):
               txt = p.read_text(encoding='utf-8')
               for i, line in enumerate(txt.splitlines(), 1):
                   if pat.search(line):

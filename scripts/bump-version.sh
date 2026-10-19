@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Bump version across marketplace.json + plugin.json in sync.
+# Bump the single AxENR version across marketplace.json and every AxENR plugin.json.
+# Every plugin except the partner plugin "axelor" shares the same version.
 # Usage: ./scripts/bump-version.sh [patch|minor|major|auto]
 
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MARKETPLACE_JSON="$ROOT/.claude-plugin/marketplace.json"
-PLUGIN_JSON="$ROOT/plugins/axenr/.claude-plugin/plugin.json"
+PARTNER_PLUGIN="axelor"
 
 if ! command -v jq >/dev/null 2>&1; then
   echo "jq is required (brew install jq)" >&2
@@ -49,22 +50,24 @@ new_version="${major}.${minor}.${patch}"
 echo "New version: $new_version"
 
 tmp=$(mktemp)
-jq --arg v "$new_version" \
+jq --arg v "$new_version" --arg partner "$PARTNER_PLUGIN" \
    '.version = $v
-    | (.plugins[] | select(.name == "axenr")).version = $v' \
+    | .plugins |= map(if .name == $partner then . else .version = $v end)' \
    "$MARKETPLACE_JSON" > "$tmp" && mv "$tmp" "$MARKETPLACE_JSON"
-
-tmp=$(mktemp)
-jq --arg v "$new_version" '.version = $v' "$PLUGIN_JSON" > "$tmp" && mv "$tmp" "$PLUGIN_JSON"
 
 echo "Updated:"
 echo "  $MARKETPLACE_JSON"
-echo "  $PLUGIN_JSON"
+for source in $(jq -r --arg partner "$PARTNER_PLUGIN" '.plugins[] | select(.name != $partner) | .source' "$MARKETPLACE_JSON"); do
+  plugin_json="$ROOT/${source#./}/.claude-plugin/plugin.json"
+  tmp=$(mktemp)
+  jq --arg v "$new_version" '.version = $v' "$plugin_json" > "$tmp" && mv "$tmp" "$plugin_json"
+  echo "  $plugin_json"
+done
 echo ""
 echo "Next steps:"
-echo "  git add .claude-plugin/marketplace.json plugins/axenr/.claude-plugin/plugin.json"
+echo "  git add .claude-plugin/marketplace.json plugins/*/.claude-plugin/plugin.json"
 echo "  GIT_COMMITTER_NAME=\"fbe-axenr\" GIT_COMMITTER_EMAIL=\"f.benomar@erp-axenr.fr\" \\"
 echo "    git commit --author=\"fbe-axenr <f.benomar@erp-axenr.fr>\" \\"
-echo "    -m \"chore(release): bump axenr plugin to v$new_version\""
+echo "    -m \"chore(release): bump axenr plugins to v$new_version\""
 echo "  git tag -a v$new_version -m v$new_version"
 echo "  git push origin main v$new_version"

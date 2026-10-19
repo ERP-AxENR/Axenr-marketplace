@@ -1,0 +1,18 @@
+# Relecture obligatoire par famille (voir docs/ARCHITECTURE.md).
+*                            @fbe-axenr
+
+# Socle et fonctionnel : la methode metier, relue par Alexis.
+/plugins/axenr-core/         @ade-axenr @fbe-axenr
+/plugins/axenr-erp/          @ade-axenr
+/plugins/axenr-gmao/         @ade-axenr
+/plugins/axenr-data/         @ade-axenr
+/plugins/axenr-permissions/  @ade-axenr
+/plugins/client-*/           @ade-axenr
+
+# Technique : relu par Fadel.
+/plugins/axenr-dev/          @fbe-axenr
+/plugins/axelor/             @fbe-axenr
+
+# Architecture et outillage.
+/docs/                       @ade-axenr @fbe-axenr
+/.claude-plugin/             @ade-axenr @fbe-axenr
