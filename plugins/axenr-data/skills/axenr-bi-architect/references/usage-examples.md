@@ -17,6 +17,8 @@ Detecte automatiquement le client AxENR depuis le `cwd` (planeteenr-app / systek
 /axenr-bi-architect top 10 clients par CA signe cette annee
 /axenr-bi-architect rotation de stock par produit sur 6 mois
 /axenr-bi-architect pourquoi mon dashboard affiche plus d'affaires qu'il n'y en a en realite
+/axenr-bi-architect les panneaux Regles et RLS n'apparaissent pas sur mon dashboard
+/axenr-bi-architect mon graphique marche dans BI Studio mais pas dans Axelor
 ```
 
 ### Avec fichier (analyse / diagnostic)
@@ -60,7 +62,8 @@ Appel a `client-context-detector`. Banner de confirmation.
 ### Etape 2 : Chargement des ressources
 
 - `references/catalog.md` (10 templates SQL + KPIs + Superset best practices)
-- Meta-modele Axelor : `~/Downloads/export-12026303288952708643.xlsx` (940 tables, 21 815 champs) pour resolution ad-hoc de champs
+- `references/axelor-bi-embedded.md` si le dashboard est affiche dans Axelor (droits, RLS, incidents)
+- Dictionnaire de donnees : requete directe sur `meta_model` / `meta_field` / `meta_json_field` (voir SKILL.md, RESSOURCES) plutot qu'un export Excel qui vieillit
 - Projet client (READ-ONLY) : lecture des extensions / champs custom `attrs` documentes si accessibles
 
 ### Etape 3 : Deleguer a l'agent

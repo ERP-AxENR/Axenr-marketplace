@@ -499,6 +499,10 @@ Superset -> Settings -> Row Level Security Filters
 Clause : company_id IN (SELECT company_id FROM user_company WHERE user_id = current_user_id())
 ```
 
+Attention :
+- la RLS s'applique sur la requete externe : la colonne filtree (ici `company_id`) doit etre exposee dans le SELECT du dataset ;
+- en BI embarque dans Axelor, un seul compte lecteur se connecte a la base : la RLS par utilisateur Axelor ne fonctionne pas. Voir `axelor-bi-embedded.md`.
+
 ---
 
 ## 4. MODELE DE DONNEES AXELOR PAR DOMAINE (colonnes detaillees)

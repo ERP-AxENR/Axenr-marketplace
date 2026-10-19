@@ -5,7 +5,8 @@ description: >
   modeles dimensionnels et dashboards Apache Superset sur la base Axelor, avec
   les KPI des installateurs ENR (photovoltaique, IRVE, PAC, eolien).
   Declencheurs : « reporting », « KPI », « indicateur », « tableau de bord », «
-  dashboard », « requete SQL », « Superset », « CA par commercial », « marge par
+  dashboard », « requete SQL », « Superset », « BI Studio », « dataset », «
+  RLS », « graphique vide dans Axelor », « CA par commercial », « marge par
   affaire », « taux de conversion », « pipeline commercial », « delai DP », «
   delai MES », « puissance installee », « top clients », et les questions «
   combien », « quel pourcentage », « quelle evolution ». PAS pour : droits
@@ -25,7 +26,7 @@ metadata:
 | Claude Code | Lecture seule du projet (cwd) ; client detecte avec le skill `client-context-detector` ; livrables ecrits dans `~/Downloads`. |
 | claude.ai et Cowork | Pas d'acces au code : demander le client concerne et les fichiers utiles s'ils ne sont pas fournis ; livrer les fichiers en telechargement. |
 
-Le detail de reference est dans `references/catalog.md` ; des exemples de demandes dans `references/usage-examples.md`. Les charger quand la tache le demande.
+Le detail de reference est dans `references/catalog.md` ; les specificites du BI embarque dans Axelor (droits, RLS, incidents connus) dans `references/axelor-bi-embedded.md` ; des exemples de demandes dans `references/usage-examples.md`. Les charger quand la tache le demande.
 
 ## CONTEXTE
 
@@ -113,6 +114,10 @@ Regles :
 - Filtres natifs (Date range, Societe, Commercial, Type projet ENR)
 - Graphiques recommandes (2-5) avec justification du choix
 - Layout propose (grille de lignes x colonnes)
+
+### Etape 4 bis - Verifier l'affichage embarque
+
+Si le dashboard est affiche dans Axelor (module BI), appliquer `references/axelor-bi-embedded.md` : Regles du menu, limite de la RLS par utilisateur, test du rendu embarque et pas seulement dans BI Studio.
 
 ### Etape 5 - Livrer la reponse au format standard
 
@@ -216,6 +221,32 @@ WHERE archived IS NOT TRUE    -- evite de compter les enregistrements archives
 - `currency_id` et `company_currency_id` sur `invoice`, `sale_order`, `purchase_order`
 - Utiliser `company_ex_tax_total`, `company_in_tax_total` pour les montants convertis en devise societe
 - Historique de taux : table `currency_conversion_line`
+
+---
+
+## REGLES DE MODELISATION DES DATASETS
+
+| Regle | Detail |
+|---|---|
+| Grain d'abord | Ecrire le grain du dataset (une ligne = quoi) avant la requete. Tout changement de grain impose d'auditer chaque agregation en aval : un `MAX` correct a un grain devient faux a un autre et doit souvent passer en `SUM`. |
+| UNION ALL | Quand une colonne n'existe que dans une branche, ajouter `NULL AS <colonne>` dans toutes les autres. Un dataset en UNION ALL melange plusieurs types de lignes : poser un filtre obligatoire sur la colonne de type au niveau de chaque graphique, sinon double ou triple comptage. |
+| Propagation des filtres natifs | Un filtre natif ne se propage entre datasets que si les colonnes portent exactement le meme nom (« Equipe active » partout, pas « Equipe » dans l'un). |
+| Equipe commerciale | Utiliser l'equipe active de l'utilisateur (`auth_user.active_team_id`, ManyToOne). Jamais `opportunity.team_id` comme equipe du commercial, ni les tables ManyToMany d'appartenance (doublons garantis). |
+| Societes de test | Les donnees d'une societe de test ou de demo polluent les agregats : rendre le filtre Societe visible sur le dashboard et le documenter. |
+| Versionnement | Garder un nom de dataset stable (le renommer casse les graphiques). Porter la version (v2.3, v2.4...) dans la description du dataset et dans Git, avec le grain et les regles d'agregation de chaque version. |
+| Pivot de taches | Pour une ligne par affaire avec ses jalons : `MAX(CASE WHEN categorie = 'X' THEN date_fin END) AS date_x`, puis un score d'avancement calcule sur les jalons. |
+| Puissance | Afficher les puissances agregees en MWc (division par 1000, format `,.1f`) au-dela du niveau affaire. |
+| Statuts commerciaux | Distinguer les statuts proches (ex. « Gagne » vs « Gagne non securise ») dans des metriques separees plutot que de les fusionner. |
+
+## METHODE DE DIAGNOSTIC (AVANT TOUTE CONFIGURATION)
+
+1. Valider le SQL par requetes directes sur la base avant de configurer le moindre graphique.
+2. Croiser les totaux entre datasets qui doivent concorder.
+3. Valider contre un export CSV de l'ERP (analyse Python si besoin) quand le client conteste un chiffre.
+4. Si le graphique marche dans BI Studio mais pas dans Axelor : voir `references/axelor-bi-embedded.md` section 3.
+5. Escalader l'infra avec un diagnostic precis (instance, version, code d'erreur, port, IP, reproduction), jamais un « ca ne marche pas ».
+
+Tout contenu destine au client (description de dashboard, script de presentation, e-mail, ticket) est redige en francais.
 
 ---
 
@@ -487,7 +518,7 @@ Correction recommandee : [dataset ou ERP]
 - Dashboard > 10 graphiques (scinder en tabs)
 - KPI sans cible associee (sauf exploration pure)
 - Moyenne sur < 10 observations
-- Nommer `v1`, `v2`, `final`, `final_fixed` les datasets
+- Nommer `v1`, `v2`, `final`, `final_fixed` les datasets (la version va dans la description, voir REGLES DE MODELISATION)
 - Pas de filtre temps par defaut (scan total de la table a chaque ouverture)
 - Reproduire les noms de colonnes techniques Axelor en tant qu'alias de sortie
 
@@ -505,7 +536,9 @@ Avant de declarer un dashboard pret pour la direction :
 - [ ] La requete SQL est versionnee dans Git (si virtual dataset)
 - [ ] Les index PostgreSQL necessaires sont crees
 - [ ] Le cache Superset est active (30min-1h selon criticite)
-- [ ] Les permissions utilisateur sont testees (RLS si multi-societe)
+- [ ] Les permissions utilisateur sont testees (RLS si multi-societe ; en BI embarque, pas de RLS par utilisateur, voir `references/axelor-bi-embedded.md`)
+- [ ] Les Regles (roles / groupes) du menu de dashboard sont renseignees
+- [ ] Le rendu est teste dans Axelor, pas seulement dans BI Studio
 - [ ] Une documentation du dashboard est jointe (definitions KPI, hypotheses)
 
 ---
@@ -537,9 +570,21 @@ L'agent est READ-ONLY sur le projet client (axenr-app / planeteenr-app / etc.) :
 ## RESSOURCES A CONSULTER
 
 - `references/catalog.md` : 10 templates SQL pretes (pipeline, CA mensuel, marge par affaire, DSO, delai DP, puissance installee, top clients, jalons chantier, rotation stock) + catalogue KPI + bonnes pratiques Superset
-- Meta-modele Axelor : `/Users/macbook/Downloads/export-12026303288952708643.xlsx` (940 modeles, 21 815 champs)
+- `references/axelor-bi-embedded.md` : droits, RLS et incidents connus du BI embarque dans Axelor
+- Dictionnaire de donnees : interroger directement `meta_model` et `meta_field` sur la base du client (requete ci-dessous). Un export Excel du meta-modele vieillit et ne contient pas les champs ajoutes depuis, notamment en low-code Studio (`meta_json_field`).
 - Skill `client-context-detector` : detection client et conventions specifiques
-- PDF Formation AxENR (48 pages) : `/Users/macbook/Desktop/document_pdf.pdf` pour contexte metier
+
+```sql
+-- Champs d'un modele, avec type et relation
+SELECT mm.name AS modele, mf.name AS champ, mf.type_name, mf.relationship, mf.mapped_by
+FROM meta_field mf
+JOIN meta_model mm ON mm.id = mf.meta_model
+WHERE mm.name = 'Opportunity'
+ORDER BY mf.name;
+
+-- Champs Studio (stockes dans attrs)
+SELECT model, name, type, title FROM meta_json_field WHERE model LIKE '%Opportunity' ORDER BY name;
+```
 
 ---
 
