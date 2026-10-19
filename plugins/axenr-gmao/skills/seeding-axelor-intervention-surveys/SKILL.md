@@ -25,6 +25,10 @@ metadata:
 > sources AOS 9.0.13 (relu en 9.1.7 sur deux points), observé à l'écran en AOS 9.1.4 / AOP EE
 > 8.2.3 ; la version actuelle du script n'a pas encore de preuve d'import de bout en bout. AxENR
 > tourne sur AOP 7.4 / AOS 8.x : chaque piège est une hypothèse à vérifier.
+> Vérifié sur la GMAO AxENR (AOP 7.4, instance de démo, 19/10/2026), par écriture REST et génération
+> réelle d'interventions : la limite de 20 questions (règle de conception 0), le conditionnement
+> (liste, même gamme, pilote avant la conditionnée, appariement par nom de choix) et la génération à
+> la planification. Le reste demeure une hypothèse sur cette version.
 
 ## Environnement d'exécution
 
@@ -32,6 +36,7 @@ metadata:
 |---|---|
 | claude.ai et Cowork | Pas d'accès à la base : cadrer le besoin (Phase 1), écrire la spécification YAML (Phase 2), produire les CSV et le `bind.xml` en appliquant les contrôles de `scripts/build_survey_bundle.py`, fournir les requêtes de contrôle de la Phase 4 à lancer par l'utilisateur. |
 | Claude Code | `python3 scripts/build_survey_bundle.py <spec.yaml> --out <dossier>` (PyYAML requis) ; contrôles SQL en lecture seule si `psql` est disponible. |
+| Claude Code, instance hébergée sans accès à la base | Même spécification YAML, écrite par l'API REST (`/ws/rest/<modèle>`) : voir « Voie API REST » en Phase 3. |
 
 Première importation sur une instance jetable ou de recette, jamais directement en production.
 
@@ -173,6 +178,15 @@ Quatre règles de conception qui évitent l'essentiel des reprises :
    14/09/2026 : sur une gamme de 23 questions parfaitement numérotées, trois se sont retrouvées en
    fin de bloc. Le générateur trie par paquets de 20 sur une requête sans tri. Découper en deux
    gammes, ce qui donne d'ailleurs deux blocs plus lisibles.
+   **Confirmé sur AOP 7.4 le 19/10/2026** : gamme onduleur de 28 questions numérotées de 10 en 10,
+   les questions 13 à 20 d'une série de mesures sont sorties après les observations de fin de bloc ;
+   la même gamme ramenée à 18 questions sort dans l'ordre. `InterventionQuestion.orderSeq` est
+   **renuméroté** à la génération, pas recopié : le tri de la grille du questionnaire ne rattrape donc
+   rien, et lire seulement son `orderBy` mène à conclure à tort que la limite n'existe pas. Toujours
+   trancher par une génération réelle.
+   C'est un défaut du générateur, remonté à Axelor (ticket Jira AxENR GMAO-149) : ne lever la règle
+   qu'une fois le correctif livré **et** vérifié par une génération réelle d'une gamme de plus de
+   20 questions.
 
 1. **Une question = un intitulé + un type de réponse.** Si deux questions ont besoin de libellés de
    case ou de textes d'indication différents, il leur faut **deux AnswerType** : ces libellés vivent
@@ -188,6 +202,26 @@ Quatre règles de conception qui évitent l'essentiel des reprises :
 4. **Ne réutilise un AnswerType « liste » que si les drapeaux de non-conformité sont les mêmes.**
    Deux gammes qui ont besoin de « Conforme / Non conforme » avec des remontées différentes ont
    besoin de deux types.
+
+### Motif : une série de mesures numérotées et historisées
+
+Cas type : tension par chaîne (string) sur un onduleur, intensité par départ, température par
+connecteur. Mis en place et vérifié sur la GMAO AxENR (AOP 7.4, 19/10/2026), gamme « par
+équipement » sur la famille Onduleurs.
+
+- **Une question par numéro, avec le numéro dans l'intitulé** : « Chaîne 1 — Mesure de tension (V) »,
+  « Chaîne 2 — … ». Jamais six fois « Mesure de la tension » : le relevé et l'historique deviennent
+  illisibles, on ne sait plus quelle chaîne a dérivé.
+- **Une pilote de type liste** « Nombre de chaînes raccordées » (« 1 chaîne » … « N chaînes »),
+  placée avant la série. La question « Chaîne k » est conditionnée par les choix k à N. Comme le
+  conditionnement ne masque rien (règle 2), l'intitulé numéroté suffit à se repérer.
+- **Un seul type de réponse mesure partagé** (unité V), et le drapeau d'historisation de la
+  `RangeQuestion` (`isMeasureToTrack` sur la GMAO AxENR ; vérifier sa présence sur la version
+  cible) coché sur chaque question de la série.
+- **Budget de 20 questions** (règle 0) : N = 20 moins les autres questions de la gamme. Sur la gamme
+  onduleur : 7 questions générales + 1 pilote = 8, donc 10 chaînes au plus (18 questions). Préférer une
+  seule gamme plafonnée à deux gammes « chaînes 1-10 / 11-20 », plus longues à dérouler sur le terrain.
+- **Aucune question de la série obligatoire** : la plupart des équipements n'ont pas N chaînes.
 
 ## Phase 3 — Produire le bundle
 
@@ -213,6 +247,28 @@ base où il est chargé.
 liaison = le `.xml`, fichier de données = le `.zip`. La mécanique du bundle, ses pièges de journal et
 les règles d'idempotence sont portées par le skill `axelor-import-export` — s'y référer
 plutôt que de les redécouvrir.
+
+### Voie API REST (instance hébergée, sans écran d'import ni base)
+
+Éprouvée sur la GMAO AxENR (AOP 7.4, 19/10/2026) : la même spécification YAML, écrite par
+`/ws/rest/<modèle>` dans l'ordre AnswerType → AnswerValue → Question → RangeType → Range →
+RangeQuestion → InterventionType → OrderedRange.
+
+- **Upsert par `importId` préfixé** (`<code>-AT-…`, `<code>-<gamme>-q<n>`, `-rq<n>`, `-r`,
+  `<code>-OR-<type>-<bloc>-<n>`) : le rejeu met à jour au lieu de dupliquer.
+- **Appliquer les mêmes contrôles que le script avant d'écrire** : 20 questions au plus, pilote de
+  type liste placée avant, réponses déclenchantes existantes, choix sans homonyme. L'API, comme
+  l'import, accepte une gamme fausse sans broncher.
+- **Ce qui préexiste se cherche par code** (catégorie, famille, unité, type d'intervention existant),
+  jamais par `importId` (piège 6bis).
+- **Un nouveau type d'intervention** recopie sa configuration d'un type existant (sociétés, durée
+  prévisionnelle, modèle de rapport, validation du rapport, type de suivi) : sinon il ne se planifie
+  pas comme les autres.
+- **Décrocher les `OrderedRange` hors spécification** sur un type existant enrichi, sinon l'ancien bloc
+  reste généré.
+- **Prévoir un mode à blanc** (`--dry-run`) qui liste ce qui serait créé.
+- **Contrôle décisif identique** : planifier une intervention, la démarrer, ouvrir le questionnaire.
+  Les interventions déjà planifiées gardent l'ancienne version (piège 10).
 
 ## Phase 4 — Contrôler
 
