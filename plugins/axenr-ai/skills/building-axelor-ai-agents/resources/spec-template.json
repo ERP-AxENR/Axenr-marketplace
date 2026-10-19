@@ -1,0 +1,49 @@
+{
+  "description": "Squelette de specification pour deploy_ai_spec.py. Les chemins sont relatifs a ce fichier. Les cles commencant par _ sont des commentaires ignores.",
+  "tools": [
+    {
+      "_comment": "Outil SCRIPT en lecture seule. prelude_files est concatene devant script_file, puis le tout est enveloppe dans (function () { ... })().",
+      "code": "domain_summary",
+      "name": "Domaine : synthese de ...",
+      "description": "Ce que l'outil calcule (lecture seule).\nQuand l'appeler : « ... », « ... ».\nEntree : {\"x\": \"...\"}.\nReponse : ... ; {ambigu: true, candidats} ; {introuvable: true}.",
+      "inputSchema": {"type": "object", "properties": {"x": {"type": "string", "description": "..."}}, "additionalProperties": false},
+      "prelude_files": ["tools/common.js"],
+      "script_file": "tools/domain_summary.js",
+      "requiresApproval": false
+    }
+  ],
+  "skills": [
+    {
+      "_comment": "La description sert au modele a choisir la skill : y mettre les declencheurs reels.",
+      "code": "domain-method",
+      "name": "Methode et pieges du domaine",
+      "description": "A charger pour ... : « ... », « ... ».",
+      "sortOrder": 10,
+      "instructions_file": "skills/domain-method.md",
+      "references": [
+        {"name": "domain-reference", "title": "Titre lisible", "file": "knowledge/domain-reference.md"}
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "_comment": "Tools, skills, subAgents et groups par code ; model_code = AiModel.code avec des appels SUCCESS.",
+      "code": "domain-expert",
+      "name": "Expert du domaine",
+      "audience": "BUSINESS",
+      "toolPolicy": "AUTO",
+      "model_code": "anthropic/claude-sonnet-5",
+      "maxSteps": 20,
+      "maxOutputTokens": 8000,
+      "isEnabled": true,
+      "isDefault": false,
+      "sortOrder": 30,
+      "allowedModels": "* !create !update !delete",
+      "systemPrompt_file": "prompts/domain-expert.md",
+      "suggestions": ["Question de demo 1", "Question de demo 2"],
+      "tools": ["domain_summary", "search_records", "read_record", "use_skill", "open_view", "ask_to_select", "calculate"],
+      "skills": ["domain-method"],
+      "groups": ["admins", "users"]
+    }
+  ]
+}

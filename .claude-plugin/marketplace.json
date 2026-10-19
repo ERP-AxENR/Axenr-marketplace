@@ -74,6 +74,17 @@
       "category": "technique"
     },
     {
+      "name": "axenr-ai",
+      "source": "./plugins/axenr-ai",
+      "description": "Axelor AI pour AxENR (Claude Code) : conception, creation par API, test et livraison d'agents du module Axelor AI (AOP 8.x) avec outils serveur, base de connaissance en skills sourcees et ecritures sous approbation. EnergIA y sera range quand le sujet reprendra.",
+      "version": "2.1.0",
+      "author": {
+        "name": "AxENR",
+        "email": "f.benomar@erp-axenr.fr"
+      },
+      "category": "technique"
+    },
+    {
       "name": "axelor",
       "source": "./plugins/axelor",
       "description": "Complete Axelor development acceleration system with agents, skills, and comprehensive documentation for Axelor ERP 8.0 development",
