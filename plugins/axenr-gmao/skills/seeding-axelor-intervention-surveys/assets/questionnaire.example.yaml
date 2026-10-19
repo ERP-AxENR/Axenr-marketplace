@@ -1,0 +1,71 @@
+# Gabarit de spécification d'un questionnaire d'intervention Axelor.
+# Consommé par scripts/build_survey_bundle.py. Format complet :
+# references/moteur-questionnaire.md § Spécification.
+#
+# Exemple : visite de maintenance annuelle d'une chaufferie, avec un bloc
+# d'arrivée, un bloc déroulé par équipement, et un bloc de clôture signé.
+
+code: MTNCH                         # préfixe de TOUS les importId — protège les données existantes
+label: Visite de maintenance annuelle chaufferie
+
+intervention_type:
+  code: MTNCH
+  name: Maintenance annuelle chaufferie
+  category:
+    code: MTN
+    name: Maintenance
+
+ranges:
+
+  # ----------------------------------------------------------------- en-tête
+  - title: Arrivée sur site
+    block: header
+    type: standard
+    questions:
+      - title: Interlocuteur rencontré
+        answer: texte
+        required: true
+      - title: Accès au local technique
+        answer: liste[Libre, Sur demande, Impossible!nc]
+        required: true
+        summary: true
+      - title: Motif du blocage d'accès
+        answer: texte
+        if:
+          question: Accès au local technique
+          answers: [Impossible]
+
+  # ------------------------------------------------- un bloc par équipement
+  - title: Contrôle chaudière
+    block: equipment
+    type: equipment
+    families: [CHAUD]               # code d'EquipmentFamily déjà présent en base
+    questions:
+      - title: État général
+        answer: liste[Bon, Acceptable, Dégradé!nc!suivi]
+        required: true
+        summary: true
+      - title: Pression du circuit
+        answer: mesure(bar)
+        required: true
+      - title: Photo de la plaque signalétique
+        answer: photo
+      - title: Consignes de sécurité rappelées
+        answer: case("Consignes rappelées à l'exploitant")
+      - title: Observation technique
+        answer: texte
+        private: true               # visible de l'intervenant, pas du client
+
+  # -------------------------------------------------------------------- pied
+  - title: Clôture de visite
+    block: footer
+    type: standard
+    questions:
+      - title: Rappel
+        answer: indication("Faire signer l'exploitant avant de quitter le site.")
+      - title: Date de la prochaine visite
+        answer: date
+        required: true
+      - title: Signature de l'exploitant
+        answer: signature
+        required: true
