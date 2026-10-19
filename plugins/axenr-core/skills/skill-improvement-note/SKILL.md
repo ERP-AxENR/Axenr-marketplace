@@ -1,13 +1,14 @@
 ---
 name: skill-improvement-note
 description: >
-  Transforme un apprentissage du jour en fiche d'amelioration de skill et la
-  depose en ticket Jira dans le projet AxENR MARKETPLACE, pour integration le
-  vendredi. Declencheurs : « note-le pour le skill », « on a appris quelque
-  chose », « ajoute ca au skill », « le skill s'est trompe », « il manque un
-  skill pour ca », « Claude n'a pas utilise le bon skill ». PAS pour : modifier
-  un skill directement (jamais), creer un ticket de developpement ERP
-  (organisateur-jira).
+  Transforme un apprentissage ou une demande d'amelioration de la marketplace
+  AxENR en fiche, puis cree le ticket Jira dans le projet « AxENR Marketplace -
+  Notre cerveau », assigne a Fadel, echeance le vendredi, pour integration
+  hebdomadaire. Declencheurs : « note-le pour le skill », « on a appris quelque
+  chose », « ajoute ca au skill », « ameliore la marketplace », « il manque un
+  skill pour ca », « le skill s'est trompe », « Claude n'a pas utilise le bon
+  skill ». PAS pour : modifier un skill directement (jamais), creer un ticket de
+  developpement ERP (organisateur-jira).
 metadata:
   owner: axenr
   process: on apprend, on note, on publie le vendredi
@@ -18,6 +19,12 @@ metadata:
 Personne ne modifie un skill directement. Chaque apprentissage devient une
 fiche, deposee dans Jira, que l'integration du vendredi reprend
 (`weekly-skill-integration`, plugin axenr-dev).
+
+## Ce qui merite une fiche
+
+Tout ce qui ameliore la marketplace AxENR : un skill a corriger ou a
+completer, un skill a creer, un declenchement rate, une regle de
+l'architecture a revoir.
 
 ## Quand faire une fiche
 
@@ -39,18 +46,27 @@ fiche, deposee dans Jira, que l'integration du vendredi reprend
 3. **Rediger la fiche** avec le gabarit ci-dessous, a partir de la
    conversation en cours. Le texte propose doit etre pret a coller dans le skill.
 4. **Montrer la fiche a l'utilisateur** et demander son accord.
-5. **Creer le ticket** avec le connecteur Atlassian :
-   - trouver le projet par son nom : recherche des projets visibles avec
-     « MARKETPLACE », retenir celui nomme « AxENR MARKETPLACE » et sa cle ;
-   - type : Tache (ou le premier type standard disponible) ;
-   - resume : `[<skill cible>] <titre court>` ;
-   - etiquette : `amelioration-skill` ;
-   - description : la fiche, en Markdown.
-6. **Donner le lien du ticket** a l'utilisateur.
+5. **Creer le ticket** avec le connecteur Atlassian (site `erp-axenr.atlassian.net`) :
 
-Si le connecteur Atlassian n'est pas disponible, ou si le projet est
-introuvable : le dire, et rendre la fiche en Markdown pour que l'utilisateur
-la colle lui-meme dans Jira.
+   | Champ | Valeur par defaut |
+   |---|---|
+   | Projet | `AMNC` (« AxENR Marketplace - Notre cerveau ») |
+   | Type | Tache (sinon le premier type standard disponible) |
+   | Resume | `[<skill cible>] <titre court>` |
+   | Responsable | Fadel Benomar (recherche d'utilisateur « fadel benomar ») |
+   | Echeance (`duedate`) | le **prochain vendredi** : du lundi au jeudi, le vendredi de la semaine ; le vendredi, samedi ou dimanche, le vendredi suivant. Format AAAA-MM-JJ |
+   | Etiquette | `amelioration-skill` |
+   | Description | la fiche, en Markdown |
+
+   L'utilisateur peut changer le responsable ou l'echeance : sa demande prime
+   sur ces valeurs par defaut.
+6. **Donner le lien du ticket** a l'utilisateur, avec le responsable et
+   l'echeance retenus.
+
+Si le connecteur Atlassian n'est pas disponible, ou si la creation est
+refusee (compte sans acces au projet AMNC) : le dire, et rendre la fiche en
+Markdown pour que l'utilisateur la colle lui-meme dans Jira. Ne jamais creer
+le ticket depuis un compte qui n'est pas celui de l'utilisateur.
 
 ## Gabarit de fiche
 

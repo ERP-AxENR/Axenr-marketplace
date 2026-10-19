@@ -85,7 +85,7 @@ en plus `client-systeko`.
 
 | Quand | Qui | Quoi |
 |---|---|---|
-| Lundi a jeudi | Tout le monde | « Note-le pour le skill » -> ticket Jira AxENR MARKETPLACE (`skill-improvement-note`) |
+| Lundi a jeudi | Tout le monde | « Note-le pour le skill » -> ticket Jira AxENR Marketplace - Notre cerveau (`skill-improvement-note`) |
 | Jeudi ou vendredi | Developpeur | « Integre les notes de la semaine » -> une PR `semaine/AAAA-Sss` (`weekly-skill-integration`) |
 | Vendredi | Alexis | Relecture et merge |
 | Apres le merge | Automatique | Release, puis synchronisation vers claude.ai, Cowork et Claude Code |

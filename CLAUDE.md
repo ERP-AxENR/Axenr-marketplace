@@ -36,7 +36,7 @@ claude.ai, Cowork et Claude Code). Agents et commandes : axenr-dev seulement.
 |-----------|------|--------|------|
 | enr-coherence-checker | skill | axenr-core | Valide la coherence ENR (generique tous types, cycle commercial) |
 | client-context-detector | skill | axenr-core | Detecte le client AxENR depuis le cwd et charge ses ressources |
-| skill-improvement-note | skill | axenr-core | « Note-le pour le skill » : fiche d'amelioration -> ticket Jira AxENR MARKETPLACE |
+| skill-improvement-note | skill | axenr-core | « Note-le pour le skill » : fiche d'amelioration -> ticket Jira AxENR Marketplace - Notre cerveau |
 | axenr-bareme-expert | skill | axenr-erp | Baremes tarifaires Axelor (moteur Pricing), catalogue en reference |
 | gmao-capabilities | skill | axenr-gmao | Capacites reelles GMAO : standard / parametrage / roadmap / specifique |
 | axelor-import-export | skill | axenr-data | Imports et exports Axelor, CORE MODEL, schemas en reference |

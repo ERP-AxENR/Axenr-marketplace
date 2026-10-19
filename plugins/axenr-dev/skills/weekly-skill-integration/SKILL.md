@@ -2,7 +2,7 @@
 name: weekly-skill-integration
 description: >
   Integration hebdomadaire des fiches d'amelioration de skills : lit les tickets
-  Jira AxENR MARKETPLACE etiquetes amelioration-skill, met a jour les skills de la
+  Jira « AxENR Marketplace - Notre cerveau » etiquetes amelioration-skill, met a jour les skills de la
   marketplace AxENR sur une branche de la semaine, lance le doctor et ouvre une
   seule PR pour relecture d'Alexis. Declencheurs : « integre les notes de la
   semaine », « integration du vendredi », « traite les fiches d'amelioration ».
@@ -27,10 +27,10 @@ Une branche, une PR par semaine. On ne merge jamais : Alexis relit et merge.
 
 ## 1. Recuperer les fiches
 
-Trouver la cle du projet nomme « AxENR MARKETPLACE », puis :
+Projet Jira `AMNC` (« AxENR Marketplace - Notre cerveau ») :
 
 ```
-project = <CLE> AND labels = amelioration-skill AND statusCategory != Done ORDER BY created ASC
+project = AMNC AND labels = amelioration-skill AND statusCategory != Done ORDER BY created ASC
 ```
 
 Afficher le tableau : ticket, skill cible, type, portee. Si aucune fiche : le

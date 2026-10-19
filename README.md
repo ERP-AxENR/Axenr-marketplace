@@ -59,7 +59,7 @@ le skill. Dans Claude Code, `/<nom-du-skill>` force un skill precis.
 ## Ameliorer un skill : le process du vendredi
 
 1. Pendant la semaine, n'importe qui dit a Claude : **« Note-le pour le skill »**.
-   Claude cree une fiche dans le projet Jira AxENR MARKETPLACE.
+   Claude cree une fiche dans le projet Jira AxENR Marketplace - Notre cerveau.
 2. Le vendredi, le developpeur dit a Claude Code : **« Integre les notes de la semaine »**.
    Claude Code met a jour les skills et ouvre une PR.
 3. Alexis relit et merge. La release et la synchronisation sont automatiques.
