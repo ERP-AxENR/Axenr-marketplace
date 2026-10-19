@@ -319,5 +319,6 @@ Détail et preuves dans `references/moteur-questionnaire.md` § Pièges. En rés
   ```
   La colonne de jointure s'appelle `depends_on_set`, pas `depends_on`.
 - `axelor-import-export` (skill) — mécanique du bundle, journal, idempotence.
+- `axelor-import-export`, référence `import-screen-advanced.md` § 8 — règles des gammes par l'écran d'import Excel (ne jamais importer `RangeQuestion.sequence`, mères avant conditionnelles, `rangeVal`).
 - `gmao-capabilities` (skill) — ce que la GMAO AxENR sait faire en standard, en paramétrage ou en roadmap.
 - `demo-data-generator` (skill) — si le besoin réel est de peupler une base, pas de modéliser un questionnaire.

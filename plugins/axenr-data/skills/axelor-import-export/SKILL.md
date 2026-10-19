@@ -42,6 +42,7 @@ Premier geste : identifier le **moteur** et la **version** de l'instance cible (
 | Cas | Moteur | Reference a charger |
 |---|---|---|
 | Fichier Excel prepare pour l'ecran d'import (mapping colonnes) : tiers, fournisseurs, comptes, CORE MODEL, creation de societe | ecran d'import | modes A a D ci-dessous + `references/catalog.md` |
+| Regles avancees de l'ecran d'import : importId, M2O qui ne resolvent pas, M2M longs (`__config__`), contrats en 6 passes, archivage, articles et ProductCompany, codes douaniers, MrpForecast, Equipment, gammes GMAO, diagnostic en cascade | ecran d'import | `references/import-screen-advanced.md` |
 | `bind.xml` + CSV/XML/ZIP par *Administration > Configurations d'import* : vues, actions, traductions livrees sans reconstruire le WAR, donnees metier en plusieurs passes, import « Reussi » sans rien en base (`Non vide = 0`), import vert mais fiches fausses | classique (`com.axelor.data`) | `references/import-bundles-classic.md` (paquet partenaire) |
 | Tiers, clients et fournisseurs, enseignes, situations comptables, adresses en plusieurs passes avec le moteur classique | classique | en plus : `references/import-bundles-partner-case-study.md` |
 | Instance **edition entreprise** : classeurs xlsx (un onglet par modele), bouton « Import » des grilles ou `/ws/data/import` ; gabarits vides ou remplis a partir des captures, exports ou Excel bruts du client ; passage unique en recette | EE | `references/import-ee-templates.md`, puis a la demande `import-ee-entree-client.md`, `import-ee-moteur.md`, `import-ee-referentiels.md`, `import-ee-passage-en-recette.md` (paquet partenaire) |
@@ -424,7 +425,7 @@ Objectif : transformer un DataBackup Axelor (export CSV d'une societe source) en
 - Separateur : `;`
 - Guillemets doubles sur TOUS les champs
 - UTF-8
-- Filtrer par `company_importId` de la source (ex: `"1"` pour societe 101)
+- Filtrer par `company_importId` de la societe source (ex: `"1"`)
 
 ### B.4 Conventions chart-config.xml
 
@@ -585,7 +586,9 @@ Exemples standards AxENR :
 | BankDetails | `bd-` | `bd-F0000310` |
 | AccountingSituation | `accsit-` | `accsit-F0000310` |
 | City | `city-` + geonameId | `city-31761` |
-| Account fournisseur | `EMS-` + code | `EMS-F0000310` |
+| Account fournisseur | prefixe court propre au dossier + code | `acc-F0000310` |
+
+Jamais de suffixe purement numerique pour un importId cree (`partner-123`) : Axelor peut le lire comme une cle primaire. Jamais de colonne `id`. Detail : `references/import-screen-advanced.md`, section 1.
 
 Avantage : **reproductibilite**. Un fournisseur `F0000310` aura toujours les memes importId dans tous les onglets, donc les reimports / mises a jour fonctionnent de maniere deterministe.
 
@@ -691,6 +694,8 @@ formattedFullName   = "<streetName>\n<zip> <cityName>\n<countryName>"
 - Product + LotNomenclature : onglet `Product.lotNomenclatureSet` (pas `lots`, pas `lotNomenclatures`)
 - Partner + Company : onglet `Partner.companySet` (pas `companies`)
 
+Au-dela de 31 caracteres : le nom du champ seul, ou le mecanisme `__config__` (24 caracteres + « - » + 6 hexa du SHA-256 du chemin complet). Axelor **ajoute** les liens M2M sans retirer les anciens. Detail : `references/import-screen-advanced.md`, section 3.
+
 ### 7. Boolean - TRUE/FALSE en majuscules
 
 **Symptome** : valeur booleenne ignoree, traite comme false.
@@ -735,7 +740,7 @@ Certains champs utilisent le CODE au lieu de l'importId :
 - `company.code` dans AccountingSituation
 - `currency.codeISO` dans Partner
 
-Verifier le modele reference avant d'assumer la convention.
+Aussi : `analyticAxis.name`, `partnerCategory.code`. Sur certaines instances, a l'inverse, seul `.importId` resout un M2O (`references/import-screen-advanced.md`, section 2). Verifier le modele reference avant d'assumer la convention.
 
 ## CHECKLIST AVANT REMISE DU LIVRABLE
 
@@ -757,6 +762,9 @@ Verifier le modele reference avant d'assumer la convention.
 - [ ] Backup recommande a l'utilisateur
 - [ ] Checklist markdown remise avec le fichier
 - [ ] Anomalies detectees dans la source listees separement
+- [ ] Aucun importId cree a suffixe purement numerique, aucune colonne `id`, aucun texte provisoire dans un `*.importId`
+- [ ] M2O mappes explicitement dans « Correspondance »
+- [ ] Import prevu feuille par feuille ; test sur 3 a 10 lignes puis lecture de `importstats` et recoupement en base
 
 ## REGLES ABSOLUES (rappel)
 
