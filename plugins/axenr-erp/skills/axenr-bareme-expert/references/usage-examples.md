@@ -13,6 +13,9 @@ planeteenr-app / axenr-app) pour adapter la societe, les categories de tiers et 
 /axenr-bareme-expert le client veut un tarif de maintenance qui depend de la puissance et du type de client
 /axenr-bareme-expert paramétrer ce BPU | ~/Downloads/BPU-2026.pdf
 /axenr-bareme-expert pourquoi mon bareme ne s'applique pas sur ce devis ?
+/axenr-bareme-expert ma regle renvoie 0 alors que les longueurs sont saisies
+/axenr-bareme-expert le cout de revient calcule par le bareme est ecrase a l'enregistrement
+/axenr-bareme-expert audite les gardes de forcage de nos baremes | ~/Downloads/export-pricing.xlsx
 ```
 
 ## CE QU'IL PRODUIT
@@ -32,5 +35,8 @@ planeteenr-app / axenr-app) pour adapter la societe, les categories de tiers et 
 - prix catalogue a 0 sur les articles et leurs `ProductCompany`, pour eviter le prix fantome
 - comportement decide et acte pour : valeur nulle, debordement du dernier palier, segment non couvert
 - distinction stricte entre un **prix** et une **regle** (inclus, sur devis, coefficient, remise)
+- champ `formula` renseigne : sans lui, le bareme n'est jamais selectionne
+- `sum { it.champ ?: 0 }` : la garde dans la closure, jamais seulement apres le `sum`
+- diagnostic par `pricingScaleLogs` avant toute relecture de code
 
 Reference : `references/catalog.md`.
