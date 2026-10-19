@@ -1,6 +1,8 @@
 # Template Expert Catalog
 
 > Knowledge base versionnee pour l'agent `axenr-template-expert`. Centralise patterns, pieges, modeles racines, catalogue complet des 77 champs et 39 techniques XDocReport.
+>
+> Ce catalogue decrit la syntaxe XDocReport. Si le log de previsualisation mentionne Carbone, appliquer `carbone.md`. Groovy de TemplateSettingsLine : `groovy-template-settings.md`. Edition XML des .docx : `docx-editing.md`.
 
 ## 1. PATTERNS XDOCREPORT VALIDES
 
@@ -42,6 +44,8 @@ Exemples :
 ```
 
 Cas d'usage : isoler l'adresse du siege parmi N adresses d'un partenaire.
+
+Statut : forme catalogue, mais resolution non fiable sur certaines instances. Si le champ ressort vide, preferer un champ Groovy au niveau racine (ex. `clientDefaultStreet` = `clientPartner?.partnerAddressList?.find { it.isDefaultAddr }?.address?.streetName ?: ''`), a creer dans TemplateSettingsLine.
 
 ### Boucle sur liste (pattern [i]/[i+1])
 
@@ -88,17 +92,19 @@ Exemple :
 :ifEQ('valeur'):showBegin ... :showEnd   -> affiche SI egal
 :ifNE('valeur'):showBegin ... :showEnd   -> affiche SI different
 
-Exemple :
-{d.clientPartner.partnerTypeSelect:ifEQ('Societe'):showBegin}Texte pour societes{d.clientPartner.partnerTypeSelect:showEnd}
+Exemple (partnerTypeSelect stocke une cle numerique : 1 = societe, 2 = particulier ; jamais le libelle) :
+{d.clientPartner.partnerTypeSelect:ifEQ('1'):showBegin}Texte pour societes{d.clientPartner.partnerTypeSelect:showEnd}
 
-{d.clientPartner.partnerTypeSelect:ifNE('Societe'):showBegin}Texte pour personnes physiques{d.clientPartner.partnerTypeSelect:showEnd}
+{d.clientPartner.partnerTypeSelect:ifNE('1'):showBegin}Texte pour personnes physiques{d.clientPartner.partnerTypeSelect:showEnd}
 ```
+
+Toute valeur de selection se compare sur sa cle stockee, pas sur son libelle affiche.
 
 ### Date formatee
 
 ```
-:formatD('L')                 -> format localise (ex: 17 avril 2026)
-:formatD('dd/MM/YYYY')        -> format personnalise
+:formatD('L')                 -> format localise : le rendu depend du moteur et de la locale (date longue ou JJ/MM/AAAA). Verifier au premier rendu.
+:formatD('DD/MM/YYYY')        -> format personnalise (jetons dayjs : DD = jour du mois ; dd = nom court du jour, a eviter)
 
 Exemples :
 {c.now:formatD('L')}                              -> date du jour
@@ -137,7 +143,7 @@ Regles :
 
 Exemples :
 clientPartner?.mainAddress?.city?.fullName ?: ''          -> contournement 3+ niveaux
-listAnswer?.name?.contains('Conforme')                    -> booleen derive
+listAnswer?.nonConforming == true                         -> booleen derive (jamais contains('Conforme') : « Non conforme » contient « Conforme »)
 realInverterDetails?.replaceAll('^[0-9]+\\s*', '') ?: ''  -> retire prefixe numerique
 ```
 
@@ -147,7 +153,7 @@ realInverterDetails?.replaceAll('^[0-9]+\\s*', '') ?: ''  -> retire prefixe nume
 
 **Symptome** : `{d.a.b.c.d}` revient vide meme si le parametrage est correct.
 
-**Cas confirme** (Emeraude) :
+**Cas confirme** (instance client) :
 - `{d.clientPartner.mainAddress.streetName}` OK
 - `{d.clientPartner.mainAddress.city.fullName}` VIDE
 
@@ -177,7 +183,7 @@ Word remplace `"` par `"` et `"`. Casse les filtres `[isDefaultAddr=true]` si la
 
 ### P7 - Filtres M2O/O2M necessitent metaField
 
-Les filtres `[x=true]` peuvent echouer si le metaField de la navigation n'est pas defini dans l'UI Axelor. Verifier dans Parametrages > Meta si le filtre echoue silencieusement.
+Les filtres `[x=true]` peuvent echouer si le metaField de la navigation n'est pas defini dans l'UI Axelor. L'import Excel de TemplateSettingsLine laisse ce metaField vide ; selon l'instance c'est bloquant ou anodin. Si le filtre echoue silencieusement, re-selectionner la relation via le Constructeur d'expression, ou remplacer le filtre par un champ Groovy (voir `groovy-template-settings.md`).
 
 ### P8 - Images liees vs embarquees
 
@@ -197,7 +203,7 @@ Ne pas confondre.
 
 ### P11 - Pas de Studio
 
-Contrainte AxENR : aucun champ custom via Studio. Tout champ derive passe par TemplateSettingsLine + Groovy.
+Contrainte AxENR : aucun champ custom cree via Studio sans accord explicite. Tout champ derive passe par TemplateSettingsLine + Groovy.
 
 ### P12 - Balise de fin boucle
 
@@ -258,7 +264,7 @@ Boucle `[i]` sans `[i+1]` de fin = boucle infinie ou mauvais rendu. Toujours fer
 ### Contract - champs courants
 
 ```
-{d.contractId}                                                         -> identifiant contrat (M26-015, etc.)
+{d.contractId}                                                         -> identifiant contrat
 {d.integer154}                                                         -> champ custom entier (surface m2)
 {d.string155}                                                          -> champ custom texte (puissance kWc)
 {d.currentContractVersion.yearlyExTaxTotalRevalued}                    -> montant HT annuel revise
@@ -300,9 +306,9 @@ Ligne 2 : {d.currentContractVersion.contractLineList[i+1].productName}    | {d.c
 ### Contexte (c=)
 
 ```
-{c.now:formatD('L')}                 -> date du jour localisee (17 avril 2026)
-{c.now:formatD('dd/MM/YYYY')}        -> format personnalise
-{c.now:formatD('yyyy-MM-dd')}        -> ISO
+{c.now:formatD('L')}                 -> date du jour localisee (rendu a verifier selon moteur et locale)
+{c.now:formatD('DD/MM/YYYY')}        -> format personnalise
+{c.now:formatD('YYYY-MM-DD')}        -> ISO
 ```
 
 ## 4. TEMPLATES AXENR RECENSES
@@ -359,11 +365,11 @@ A ajouter dans Parametrages > Templates > Projet > TemplateSettingsLine :
 <TypeDoc>_<Client>_V<N>.docx
 
 Exemples :
-- Mandat_ENEDIS_Systeko_V1.docx
-- Contrat_Maintenance_Planete_V2.docx
-- Fiche_Collecte_Emeraude_V3.docx
-- CARD-I_BT_Planete_V1.docx
-- Attestation_UF_Systeko_V1.docx
+- Mandat_ENEDIS_<Client>_V1.docx
+- Contrat_Maintenance_<Client>_V2.docx
+- Fiche_Collecte_<Client>_V3.docx
+- CARD-I_BT_<Client>_V1.docx
+- Attestation_UF_<Client>_V1.docx
 ```
 
 Destination : `~/Downloads/` par defaut, jamais dans `axenr-app`.
@@ -380,6 +386,10 @@ Destination : `~/Downloads/` par defaut, jamais dans `axenr-app`.
 - [ ] Chaines 3+ niveaux remplacees par champs Groovy derives au niveau racine
 - [ ] Images embarquees (pas de liens)
 - [ ] Guillemets droits preserves dans les filtres
+- [ ] Moteur identifie (XDocReport ou Carbone) d'apres le log de previsualisation
+- [ ] Selections comparees sur leur cle stockee, statuts sur `nonConforming` (jamais `contains` sur un libelle)
+- [ ] .docx genere jamais ouvert dans Word ou LibreOffice ; controle par rendu PDF d'une copie
+- [ ] Teste en recette, jamais en production
 - [ ] NO EMOJIS
 - [ ] Fichier sauvegarde dans `~/Downloads/` avec nommage standard
 - [ ] Tableau recapitulatif des champs remis avec le livrable

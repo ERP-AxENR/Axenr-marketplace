@@ -8,7 +8,7 @@ Les 3 fichiers de reference sont proprietaires AxENR (contiennent du parametrage
 
 ### 1. Catalogue des champs dynamiques
 
-Chemin par defaut : `/Users/macbook/Downloads/Champs_dynamiques_templates (2).xlsx`
+Emplacement : fourni par l'utilisateur (ou catalogue vivant Google Sheets du client, a relire a chaque session)
 
 Contenu : 77 champs + 39 techniques, catalogues en 3 feuilles (Champs dynamiques, Fonctions & techniques, Legende).
 
@@ -16,17 +16,15 @@ Mise a jour : a re-exporter depuis la source interne AxENR a chaque evolution ma
 
 ### 2. Template de reference Contrat de maintenance
 
-Chemin par defaut : `/Users/macbook/Downloads/f1ce984f6635a4e9d046b4f89566c992fec7088d324566fe7de44adc5d554bde (1).docx`
-
-Ou n'importe quel template Contrat de maintenance en production (ex: Planete M26-015).
+Emplacement : fourni par l'utilisateur (n'importe quel template Contrat de maintenance en production).
 
 Contenu : exemple avance avec racine Contract, boucles, variables locales, champs custom.
 
 ### 3. Export TemplateSettingsLine du client
 
-Chemin par defaut : `/Users/macbook/Downloads/export-18305243113295820288.xlsx`
+Emplacement : fourni par l'utilisateur (export frais de l'instance concernee)
 
-Contenu : source de verite absolue sur les champs autorises. Varie d'un client AxENR a l'autre (Systeko, Planete, Emeraude Solaire) - chaque mission peut utiliser son propre export.
+Contenu : source de verite absolue sur les champs autorises. Varie d'un client AxENR a l'autre - chaque mission utilise l'export de l'instance concernee.
 
 Mise a jour : re-exporter depuis l'instance Axelor du client via Parametrages > Templates > TemplateSettings > Export.
 

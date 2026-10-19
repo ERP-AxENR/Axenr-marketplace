@@ -1,6 +1,6 @@
 # Exemple - Contrat de maintenance (racine Contract)
 
-> Transcription partielle du template Planete ENR en production.
+> Transcription partielle et anonymisee d'un template client en production.
 > Illustre la racine `d = Contract`, les boucles, les variables locales, les champs custom.
 
 ## Racine
@@ -14,7 +14,7 @@ Contrat n° : {d.contractId}
 
 ENTRE :
 
-Le PRESTATAIRE : MAINTENANCE ENR SAS, ... (texte fixe)
+Le PRESTATAIRE : <raison sociale du prestataire>, ... (texte fixe)
 
 ET
 
@@ -73,10 +73,10 @@ Points :
 ## Date de signature
 
 ```
-Fait en deux exemplaires : a ANTIGNY, le {c.now:formatD('L')},
+Fait en deux exemplaires : a <ville>, le {c.now:formatD('L')},
 ```
 
-Le `c.now` avec format localise `'L'` produit par exemple "17 avril 2026".
+Le rendu de `c.now` avec le format localise `'L'` depend du moteur et de la locale (date longue ou JJ/MM/AAAA) : verifier au premier rendu.
 
 ## Champs utilises dans cet exemple
 
