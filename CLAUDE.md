@@ -18,10 +18,10 @@ axenr-marketplace/
 ├── docs/ARCHITECTURE.md
 ├── scripts/                          # bump-version.sh, marketplace-doctor.py
 └── plugins/
-    ├── axenr-core/                   # [socle] Pour tous : coherence ENR, client-context, notes d'amelioration
+    ├── axenr-core/                   # [socle] Pour tous : coherence ENR, client-context, charte graphique, notes d'amelioration
     ├── axenr-erp/                    # [fonctionnel] ERP : baremes
     ├── axenr-gmao/                   # [fonctionnel] GMAO : capacites reelles de la solution
-    ├── axenr-data/                   # [fonctionnel] Import/export, templates XDocReport, BI Superset
+    ├── axenr-data/                   # [fonctionnel] Import/export, templates XDocReport/Carbone, modeles de mail, BI Superset
     ├── axenr-permissions/            # [fonctionnel] Droits et permissions
     ├── axenr-dev/                    # [technique] Claude Code : ticket-solver, PR review, lecons, outillage
     └── axelor/                       # [technique] Partenaire Axelor (ne pas modifier)
@@ -36,11 +36,13 @@ claude.ai, Cowork et Claude Code). Agents et commandes : axenr-dev seulement.
 |-----------|------|--------|------|
 | enr-coherence-checker | skill | axenr-core | Valide la coherence ENR (generique tous types, cycle commercial) |
 | client-context-detector | skill | axenr-core | Detecte le client AxENR depuis le cwd et charge ses ressources |
+| axenr-brand | skill | axenr-core | Charte graphique officielle : logos SVG/PNG, palette, polices Bruno Ace et Montserrat, regles d'usage |
 | skill-improvement-note | skill | axenr-core | « Note-le pour le skill » : fiche d'amelioration -> ticket Jira AxENR Marketplace - Notre cerveau |
 | axenr-bareme-expert | skill | axenr-erp | Baremes tarifaires Axelor (moteur Pricing), catalogue en reference |
 | gmao-capabilities | skill | axenr-gmao | Capacites reelles GMAO : standard / parametrage / roadmap / specifique |
 | axelor-import-export | skill | axenr-data | Imports et exports Axelor, CORE MODEL, schemas en reference |
-| axenr-template-expert | skill | axenr-data | Templates Word XDocReport (.docx prets a l'import), catalogue en reference |
+| axenr-template-expert | skill | axenr-data | Templates Word XDocReport et Carbone (.docx prets a l'import), catalogue et references Carbone / Groovy / edition docx |
+| axelor-modeles-mail | skill | axenr-data | Modeles de mail Axelor (StringTemplate) : creation, test, pieces jointes, depannage |
 | axenr-bi-architect | skill | axenr-data | Requetes SQL PostgreSQL + dashboards Superset, catalogue en reference |
 | axelor-droits-expert | skill | axenr-permissions | Matrice de droits, import, audit, diagnostic |
 | erp-consultant-enr | agent | axenr-dev | Consultant ERP ENR appele par le ticket-solver (genericite, temporalite) |

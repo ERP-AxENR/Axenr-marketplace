@@ -1,7 +1,7 @@
 {
   "name": "axenr-data",
-  "version": "2.0.0",
-  "description": "Donnees AxENR : imports et exports Axelor, templates Word XDocReport, architecture BI Superset.",
+  "version": "2.1.0",
+  "description": "Donnees AxENR : imports et exports Axelor, templates Word (XDocReport et Carbone), modeles de mail Axelor, architecture BI Superset.",
   "author": {
     "name": "AxENR",
     "email": "f.benomar@erp-axenr.fr"
