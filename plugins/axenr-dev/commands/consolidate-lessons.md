@@ -5,6 +5,10 @@ argument-hint: [--auto] [--dry-run]
 
 # /axenr-dev:consolidate-lessons
 
+> `<marketplace_path>` : clone de travail de la marketplace (depot git dont l'origin est
+> `fbe-axenr/Axenr-marketplace`), par exemple `/Users/macbook/Desktop/Projects/Axenr-marketplace`.
+> Jamais la copie d'installation `~/.claude/plugins/marketplaces/...`. Si introuvable, demander le chemin.
+
 Nettoie la base de lecons : fusionne les doublons accumules avant l'arrivee de lesson-deduplicator, depile la REVIEW QUEUE, promeut les lecons qui atteignent 3 occurrences apres fusion.
 
 ## POURQUOI
