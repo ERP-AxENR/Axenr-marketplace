@@ -52,6 +52,26 @@ compare à la matrice source, ligne à ligne. Les écarts à chercher :
 - un doublon de clé naturelle ;
 - un menu du périmètre resté sans rôle.
 
+## Compléments de recette
+
+> Apport d'un chef de projet Axelor (paquet du 15/10/2026), éprouvé sur AOS 9.1.6 / AOP EE 8.2.3.
+> À vérifier sur la version cible.
+
+- **Valeurs imbriquées** : sur chaque formulaire du périmètre, saisir aussi ce qui se crée en ligne
+  (un e-mail, une nouvelle adresse, une ligne de commande) : c'est là que tombent les refus que la
+  simple ouverture ne montre pas.
+- **Chaque geste**, pas seulement l'ouverture : Valider, Réaliser, Facturer, Générer, assistants.
+- **Menus servis par le serveur** : sauvegarder `GET /ws/action/menu/all` de chaque profil
+  (`diagnostic.md`) ; le refaire après toute activation d'application et comparer.
+- **Mobile** : si le profil utilise l'application mobile, jouer démarrage, liste, détail et
+  modification avec le compte de test (`fermeture-dependances-vues.md`).
+- **Conditions** : liste, ouverture directe d'un identifiant interdit, création hors périmètre,
+  contenu de l'export (`permissions-conditionnelles.md`).
+- **Prérequis des comptes** : société active et sociétés, `blocked = false`, langue, employé quand
+  un flux RH ou de validation est concerné, sièges Guardian restants (édition entreprise).
+- **Caches** : après une modification en SQL, redémarrer Tomcat avant de tester ; jamais de test
+  entre un « Tout restaurer… » et le redémarrage (`diagnostic.md`).
+
 ## Avant la production
 
 - [ ] Chaque profil a été testé par un compte dédié, avec reconnexion

@@ -40,6 +40,11 @@ product?.id == <id> || product?.parentProduct?.id == <id>
 Consequence pratique : en script SQL, il faut ecrire la formule soi-meme avec l'id reel
 de l'article dans la base cible. Renseigner `product` sans formule ne cible rien.
 
+**Champ `formula` vide = bareme jamais selectionne**, sans erreur. C'est la premiere chose a
+verifier quand un bareme cree a la main (copie d'un autre, saisie directe en base) ne
+s'applique pas : le log de calcul (`pricingScaleLogs`, voir 11.1) indique alors qu'aucun bareme
+n'a ete trouve, et non que les classifications ne matchent pas.
+
 ### 1.2 Ordre d'evaluation
 
 1. Selection des baremes candidats (filtre ci-dessus + formule)
@@ -284,6 +289,68 @@ A ne pas faire : enregistrer 0 comme un prix. Une ligne a 0 EUR passe la validat
 facture - typiquement sur une intervention d'urgence, ou le montant est le plus eleve et
 l'urgence pousse a valider vite.
 
+### 4.8 Chainer des baremes avec `linkedPricing`
+
+`linkedPricing` sert uniquement a **chainer** des baremes : le bareme lie s'execute apres le
+premier, sur le meme enregistrement. Usage type : une chaine "cout de revient avec alea ->
+prix unitaire -> marge", ou chaque maillon lit le resultat du precedent sur la ligne.
+
+- Un maillon doit lire le champ ecrit par le maillon precedent, jamais recalculer sa source :
+  sinon les deux calculs divergent au premier changement de formule.
+- Un bareme lie n'est pas un critere de selection : il ne s'execute que si le premier bareme
+  a ete selectionne (formule, societe, modele, type).
+
+### 4.9 Courbe de prix continue plutot que paliers
+
+Quand le prix suit une grandeur continue (surface, longueur, puissance) avec un plancher,
+preferer une formule a une grille de paliers :
+
+```groovy
+// Regle RESULTAT, champ price
+def PRIX_PLANCHER = new BigDecimal('450')
+def COEF_M2       = new BigDecimal('3.20')
+def s = new BigDecimal((attrs?.surfaceM2 ?: 0).toString())
+[PRIX_PLANCHER, s * COEF_M2].max()
+```
+
+Une grille de paliers cree des sauts de prix que le client ne comprend pas (1 m2 de plus =
++200 EUR). Ne garder les paliers que si **le metier veut une discontinuite** (changement
+d'engin, de categorie d'habilitation, de forfait).
+
+### 4.10 Garde de forcage par un booleen Studio
+
+Quand l'utilisateur doit pouvoir **imposer** une quantite ou un prix que le bareme calculerait
+sinon, poser un booleen Studio sur la ligne (ex. "Forcer la quantite", "Forcer le prix") et le
+tester dans **chaque** regle de resultat concernee :
+
+```groovy
+// Regle RESULTAT, champ qty
+if (attrs?.forcerQuantite == true) return qty   // valeur saisie conservee
+// ... calcul normal
+```
+
+- La garde doit etre presente dans **toutes** les regles qui ecrivent le champ, y compris celles
+  de baremes lies : une seule regle sans garde ecrase la saisie au recalcul suivant.
+- Rendre le champ editable dans la vue quand le booleen est coche, et seulement dans ce cas.
+- Auditer periodiquement : lister les regles de resultat qui ecrivent `qty` ou `price` et
+  verifier la presence de la garde dans chacune.
+
+### 4.11 Cout de revient pilote par bareme : `costPrice = 0` au niveau societe
+
+Probleme : le calcul standard (`fillCostPrice`) reecrit `subTotalCostPrice` a partir du
+`costPrice` de l'article, et ecrase la valeur posee par le bareme.
+
+Technique constatee : mettre `costPrice = 0` sur la configuration **societe** de l'article
+(`ProductCompany`). Le calcul standard ne reecrit plus le cout quand il vaut 0, et le bareme
+garde la main sur `subTotalCostPrice`.
+
+- **Reserve** aux articles sans cout d'achat ni cout de stock reel (prestations, forfaits
+  calcules). Pour un article achete ou stocke, utiliser un champ Studio dedie au cout calcule.
+- Verifier que le bareme se **redeclenche au changement de quantite** : sinon le cout reste
+  celui de la quantite initiale.
+- **Anti-pattern** : recopier le cout dans `costPrice` a chaque devis. Le cout de l'article
+  devient celui du dernier devis saisi, pour tous les documents suivants.
+
 ---
 
 ## 5. PIEGES DOCUMENTES
@@ -363,6 +430,41 @@ systeme et dans le webapp classloader.
 
 Non bloquant (l'exception est catchee) mais bruyant. **Disparait en Tomcat externe**, ou il n'y a
 qu'un seul classloader. Aucun interrupteur cote configuration Studio.
+
+### 5.10 `sum { it.champ }` sans garde : NPE silencieuse, resultat a 0
+
+**Symptome** : la regle renvoie 0 ou rien alors que les donnees existent. Aucun message visible.
+
+Cause : un seul element de la collection a le champ nul, et `sum` leve une NPE que le moteur
+avale. Le `?: 0` place **apres** le `sum` ne couvre que l'absence de collection, pas un element nul.
+
+```groovy
+// FAUX : le ?: 0 externe ne protege pas des elements nuls
+def total = lignes?.sum { it.longueur } ?: 0
+
+// CORRECT : garde dans la closure, liste vide geree, cast explicite
+def total = (lignes ?: []).sum { it?.longueur ?: 0 } ?: 0
+return new BigDecimal(total.toString())
+```
+
+Regle : `?.` sur toute la chaine d'acces, `?: []` avant `sum`, `?: 0` **dans** la closure,
+cast `as BigDecimal` ou `new BigDecimal(...)` en sortie.
+
+### 5.11 `return` de haut niveau : il fonctionne
+
+Une conclusion a circule selon laquelle un `return` en tete de formule serait ignore par le
+moteur. Elle est **fausse** : le `return` de haut niveau fonctionne. Le symptome qui l'avait
+fait croire etait en realite le piege 5.10. Avant d'accuser la syntaxe, chercher une NPE.
+
+### 5.12 `saleOrder.opportunity` dans un bareme de ligne de devis
+
+Sur un bareme `SaleOrderLine`, ne pas passer par `saleOrder.opportunity` par defaut : le devis
+n'a pas toujours d'opportunite, et la grandeur lue la peut avoir diverge de celle du devis.
+Lire d'abord le champ sur la ligne (directement ou via `__this__`), puis sur `saleOrder`, et
+ne descendre vers l'opportunite qu'en repli explicite et documente (cascade du pattern 4.4).
+
+Inversement, sur un bareme dont l'objet est `Opportunity`, les champs se lisent **directement**
+(`estimatedPower`), jamais `opportunity.estimatedPower`.
 
 ---
 
@@ -586,6 +688,10 @@ CONTINUE WHEN EXISTS (SELECT 1 FROM base_product WHERE code = r.code AND dtype =
 - [ ] `autoUpdateSalePrice` a `false`
 - [ ] Regles partagees reutilisees, pas dupliquees
 - [ ] Comportement decide pour : valeur nulle, debordement haut, segment non couvert
+- [ ] Champ `formula` renseigne sur chaque bareme
+- [ ] Aucun `sum` sans garde dans la closure
+- [ ] Garde de forcage presente dans toutes les regles qui ecrivent un champ forcable
+- [ ] Cout pilote par bareme : `costPrice = 0` sur la `ProductCompany`, recalcul au changement de quantite verifie
 
 **Scripts**
 - [ ] Aucun identifiant technique en dur (`grep` de controle)
@@ -607,3 +713,100 @@ CONTINUE WHEN EXISTS (SELECT 1 FROM base_product WHERE code = r.code AND dtype =
 - [ ] Part de clients hors segments couverts, chiffree
 - [ ] Mecanismes transitoires assumes et leur date de revision
 - [ ] Plafonds et comportements par defaut actes
+
+---
+
+## 10. ECRIRE UNE FORMULE GROOVY LISIBLE
+
+| Regle | Pourquoi |
+|---|---|
+| Constantes nommees (`PRIX_PLANCHER`, `SEUIL_M2`, `COEF_M2`) en tete | La revision tarifaire se fait sans relire l'algorithme |
+| Terminer par une **expression finale nue** (ou un `return` explicite) | La valeur retournee est evidente a la relecture |
+| `?.` sur chaque acces relationnel, `?:` sur chaque valeur lue | Un champ vide ne doit jamais lever d'exception (5.2, 5.10) |
+| Sortie decimale toujours en `BigDecimal` | Evite `ClassCastException` (5.2) |
+| Commentaire = **intention**, pas paraphrase du code | `// plancher contractuel` aide ; `// prend le max` n'aide pas |
+| Aucune justification metier inventee en commentaire | Une fausse justification est pire que pas de commentaire : elle sera crue |
+
+Acces aux donnees :
+- `attrs` = champs Studio de l'objet du bareme ; ceux de l'entete via `saleOrder.attrs` (5.6).
+- Dans le JSON `attrs`, un champ personnalise peut apparaitre sous une cle technique
+  `<type><id>` (ex. `integer2287`, `decimal110`) : relever la cle reelle en base
+  (`meta_json_field`) avant d'ecrire la formule, et convertir les decimaux avec
+  `new BigDecimal(valeur.toString())`.
+- Resultat lu depuis la ligne de grille : `pricingLine.resultParam1` a `resultParam4`,
+  aucune autre variante.
+- Pour un prix decimal saisi en champ Studio, le type "Chaine de caracteres" est le pattern
+  historique AxENR : convertir explicitement en `BigDecimal` dans la formule.
+
+---
+
+## 11. DIAGNOSTIQUER UN BAREME QUI NE S'APPLIQUE PAS
+
+### 11.1 Lire le log de calcul
+
+Sur la ligne de devis, lancer **"Recalcul des prix"**, puis lire le champ `pricingScaleLogs` de
+la ligne. Il dit lequel des trois cas s'applique :
+
+| Log | Signification | Ou chercher |
+|---|---|---|
+| Aucun bareme utilise | Le bareme n'a pas ete selectionne | Formule vide (1.1), `typeSelect` (5.1), societe, dates, modele, archive |
+| "devrait etre applique mais n'a pas pu l'etre" | Bareme trouve, classifications sans correspondance | 5.7, sens de l'operateur (2.1), ordre des lignes |
+| Bareme applique, resultat inattendu | Regle de resultat fautive | NPE avalee (5.10), cast (5.2), garde de forcage (4.10) |
+
+### 11.2 Comparer a un bareme qui marche
+
+Quand le log ne suffit pas, comparer **champ par champ** le bareme en echec a un bareme
+fonctionnel de la meme instance (fetch REST en lecture ou requete SQL sur `base_pricing`) :
+formule, `typeSelect`, societe, modele concerne, dates, regles de classification et de resultat,
+`linkedPricing`. L'ecart saute aux yeux plus vite qu'un raisonnement sur le code.
+
+### 11.3 Isoler la formule fautive, du plus simple au plus reel
+
+1. Remplacer la formule par une **valeur fixe** : si rien ne s'affiche, le probleme est en amont.
+2. Lire un **champ connu et renseigne** de l'objet : valide l'acces au contexte.
+3. Verifier la donnee en **SQL** : le champ est-il vraiment alimente sur cet enregistrement ?
+4. Verifier le **nom technique** dans `meta_field` / `meta_json_field` (nom de propriete,
+   pas de colonne : `length_overallm` en base peut etre `lengthOverallM` en Groovy).
+5. En dernier recours, tester l'acces en **JPQL**.
+
+Debug "aucun resultat" sur une grille : formule non nulle -> sens de l'operateur -> ordre des
+lignes -> desactiver les autres classifications -> toutes les classifications renseignees.
+
+### 11.4 Generateur d'indicateurs (requetes depuis l'interface)
+
+Pratique pour verifier une donnee sans acces base, avec trois limites : **pas de JSONB**
+(les `attrs` ne sont pas lisibles), **pas de cast**, **pas de `;` final**.
+
+---
+
+## 12. PARAMETRER DEPUIS L'INTERFACE
+
+| Situation | Constat | Parade |
+|---|---|---|
+| Champ Formule du bareme en lecture seule | C'est un editeur Monaco verrouille | Console du navigateur : `monaco.editor.getEditors()[0].updateOptions({readOnly:false})`, puis `executeEdits` pour injecter le texte, puis enregistrer |
+| Ecriture REST directe refusee | Les ecritures d'agent sur une ressource partagee peuvent etre bloquees | Creer et modifier par l'interface |
+| Ajout de ligne dans une grille O2M | Le "+" n'agit pas | Passer la grille en mode edition avant "+" |
+| Editeur riche | `ctrl+a` selectionne la page | Cliquer dans le champ avant `ctrl+a` |
+| Creer une variante | | "Dupliquer" fonctionne pour l'article et pour le bareme |
+| Menu des baremes | Son libelle varie selon l'instance ("Ventes > Bareme", "Tarification") | Le chercher par la recherche de menu |
+
+Le contournement Monaco est un expedient de consultant : il ne remplace pas une correction
+des droits ou de la vue si un utilisateur metier doit modifier les formules en autonomie.
+
+---
+
+## 13. EXPLOITER UN EXPORT DE BAREMES (XLSX)
+
+Un export Axelor des regles de bareme se lit avec pandas, onglet `PricingRule` :
+
+```python
+import pandas as pd
+df = pd.read_excel("export.xlsx", sheet_name="PricingRule")
+df.columns = [c.strip() for c in df.columns]   # noms de colonnes avec espaces finaux
+for _, r in df.iterrows():
+    print(r.iloc[0], "|", r["Formule"])          # la formule est dans la colonne "Formule"
+```
+
+Usage : audit en masse (gardes de forcage presentes, `?: 0` en fin de classification decimale,
+`sum` sans garde), avant toute correction dans l'interface.
+

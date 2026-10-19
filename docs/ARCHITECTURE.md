@@ -10,7 +10,7 @@ consultant ne doit pas tomber sur l'outillage Git.
 La marketplace vit sur GitHub et sert a la fois :
 - **claude.ai et Cowork** : Organization settings > Plugins & skills > Sync from
   GitHub ; les skills des plugins arrivent automatiquement apres chaque merge ;
-- **Claude Code** : `/plugin marketplace add fbe-axenr/Axenr-marketplace`, puis
+- **Claude Code** : `/plugin marketplace add ERP-AxENR/Axenr-marketplace`, puis
   installation des plugins.
 
 Seuls les skills fonctionnent des deux cotes. D'ou la regle : hors famille
@@ -33,12 +33,12 @@ La famille est declaree dans `.claude-plugin/marketplace.json` (champ
 
 | Plugin | Famille | Contenu |
 |---|---|---|
-| `axenr-core` | socle | Coherence ENR, detection du client, « Note-le pour le skill » (consultant ENR en skill : a venir, fusion des 6 exemplaires) |
+| `axenr-core` | socle | Coherence ENR, detection du client, charte graphique (`axenr-brand`), « Note-le pour le skill » (consultant ENR en skill : a venir, fusion des 6 exemplaires) |
 | `axenr-erp` | fonctionnel | `axenr-bareme-expert` : baremes et moteur Pricing |
-| `axenr-gmao` | fonctionnel | Capacites reelles de la GMAO (standard, parametrage, roadmap, specifique) |
-| `axenr-data` | fonctionnel | `axelor-import-export`, `axenr-template-expert`, `axenr-bi-architect` |
+| `axenr-gmao` | fonctionnel | Capacites reelles de la GMAO (standard, parametrage, roadmap, specifique), questionnaires d'intervention |
+| `axenr-data` | fonctionnel | `axelor-import-export`, `axenr-template-expert`, `axelor-modeles-mail`, `axenr-bi-architect`, `demo-data-generator` |
 | `axenr-permissions` | fonctionnel | Matrice de droits, import, audit, diagnostic |
-| `axenr-dev` | technique | Ticket-solver et son consultant ENR, revue de PR, montee de version, lecons, outillage de la marketplace, integration du vendredi |
+| `axenr-dev` | technique | Ticket-solver et son consultant ENR, revue de PR, montee de version, environnements jetables, connecteurs tiers, lecons, outillage de la marketplace, integration du vendredi |
 | `axelor` | technique | Plugin du partenaire Axelor, non modifie |
 
 ## Qui installe quoi

@@ -8,8 +8,9 @@ description: >
   dur et un cahier de recette. Declencheurs : « bareme », « pricing », « grille
   tarifaire », « BPU », « bordereau de prix », « prix par palier », « tarif
   different selon », « le prix depend de », « remise », « coefficient », «
-  PricingRule », « PricingLine ». PAS pour : prix de vente d'un article isole,
-  devis ponctuel.
+  PricingRule », « PricingLine », « le bareme ne s'applique pas », « formule
+  Groovy du bareme », « pricingScaleLogs ». PAS pour : prix de vente d'un
+  article isole, devis ponctuel.
 metadata:
   owner: axenr
   family: fonctionnel
@@ -45,9 +46,13 @@ Le catalogue **`references/catalog.md`** est ta reference. Il contient :
 - l'architecture reelle du moteur et son ordre d'evaluation
 - les contraintes dures verifiees dans le code AOS
 - la regle de decision article vs bareme
-- 7 patterns de parametrage avec leur code Groovy
-- 9 pieges documentes avec leur symptome
+- 11 patterns de parametrage avec leur code Groovy (dont chainage `linkedPricing`, courbe
+  continue, garde de forcage, cout de revient pilote par bareme)
+- 12 pieges documentes avec leur symptome
 - les requetes d'inventaire et le modele de scripts livrables
+- les regles d'ecriture d'une formule Groovy lisible (section 10)
+- la methode de diagnostic d'un bareme qui ne s'applique pas (section 11)
+- les contournements de l'interface et l'exploitation d'un export xlsx (sections 12 et 13)
 
 **Consulte-le systematiquement avant de proposer quoi que ce soit.** Ne reinvente pas un pattern
 qui y figure deja, et n'invente jamais un comportement du moteur : s'il n'est pas dans le
@@ -111,6 +116,16 @@ Trois exigences non negociables :
 
 Valider sur une **restauration vierge avec sequences decalees**, puis comparer les empreintes
 md5 a l'environnement de reference.
+
+### Cas particulier - Un bareme ne s'applique pas
+
+Ne pas relire le code en premier. Dans l'ordre (catalogue section 11) :
+1. "Recalcul des prix" sur la ligne, puis lire `pricingScaleLogs` : bareme non selectionne,
+   classifications sans correspondance, ou resultat fautif.
+2. Bareme non selectionne : champ `formula` vide ? `typeSelect` ? societe, modele, dates ?
+3. Comparer champ par champ avec un bareme qui fonctionne sur la meme instance.
+4. Isoler la formule : valeur fixe -> champ connu -> SQL -> `meta_field` -> JPQL.
+5. Avant d'accuser la syntaxe (`return`, operateur), chercher une NPE avalee (`sum` sans garde).
 
 ## REGLES DE CONDUITE
 

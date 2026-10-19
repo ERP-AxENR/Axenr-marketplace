@@ -6,7 +6,7 @@ argument-hint: [--dry-run] [--auto-pr]
 # /axenr-dev:sync-lessons
 
 > `<marketplace_path>` : clone de travail de la marketplace (depot git dont l'origin est
-> `fbe-axenr/Axenr-marketplace`), par exemple `/Users/macbook/Desktop/Projects/Axenr-marketplace`.
+> `ERP-AxENR/Axenr-marketplace`), par exemple `/Users/macbook/Desktop/Projects/Axenr-marketplace`.
 > Jamais la copie d'installation `~/.claude/plugins/marketplaces/...`. Si introuvable, demander le chemin.
 
 Pousse les lecons accumulees localement (LOCAL-LESSONS-<hostname>.md) vers le fichier partage `LESSONS-LEARNED.md` du marketplace, en passant par une Pull Request pour review.

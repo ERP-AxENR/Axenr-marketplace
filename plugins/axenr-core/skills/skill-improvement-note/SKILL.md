@@ -53,13 +53,16 @@ l'architecture a revoir.
    | Projet | `AMNC` (« AxENR Marketplace - Notre cerveau ») |
    | Type | Tache (sinon le premier type standard disponible) |
    | Resume | `[<skill cible>] <titre court>` |
-   | Responsable | Fadel Benomar (recherche d'utilisateur « fadel benomar ») |
+   | Responsable | **Toujours** Fadel Benomar, relecteur de la marketplace (recherche d'utilisateur « fadel benomar ») |
    | Echeance (`duedate`) | le **prochain vendredi** : du lundi au jeudi, le vendredi de la semaine ; le vendredi, samedi ou dimanche, le vendredi suivant. Format AAAA-MM-JJ |
    | Etiquette | `amelioration-skill` |
    | Description | la fiche, en Markdown |
 
-   L'utilisateur peut changer le responsable ou l'echeance : sa demande prime
-   sur ces valeurs par defaut.
+   Le ticket est toujours assigne a Fadel : c'est lui qui fait la revue de
+   toute modification de la marketplace. Ne jamais le laisser non assigne ni
+   l'assigner a son auteur. L'utilisateur peut changer l'echeance : sa demande
+   prime sur la valeur par defaut. Un ticket qui accompagne une PR deja prete a
+   relire passe directement au statut « En review ».
 6. **Donner le lien du ticket** a l'utilisateur, avec le responsable et
    l'echeance retenus.
 

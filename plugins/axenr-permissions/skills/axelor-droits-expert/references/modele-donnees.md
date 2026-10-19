@@ -36,11 +36,20 @@ Le nommage des tables de jointure n'est pas homogène. Exemples relevés :
 | `auth_role_permissions` | `auth_role`, `permissions` |
 | `meta_menu_groups` | `meta_menu_id`, `group_id` |
 | `meta_menu_roles` | `menus`, `roles` |
+| `auth_user_roles` | `auth_user`, `roles` |
+| `auth_user_permissions` | `auth_user`, `permissions` |
+| `auth_role_meta_permissions` | `auth_role`, `meta_permissions` |
+| `auth_group_meta_permissions` | `auth_group`, `meta_permissions` |
+
+Les quatre dernières lignes viennent de l'apport d'un chef de projet Axelor (paquet du 15/10/2026,
+AOP 8.2.3) : à confirmer sur la version cible comme les autres.
 
 `meta_menu_groups` utilise le suffixe `_id`, `meta_menu_roles` non. Toute requête d'audit part de
 `information_schema.columns`, jamais d'une convention supposée.
 
-`group` est un mot réservé PostgreSQL : écrire `u."group"`.
+`group` est un mot réservé PostgreSQL : écrire `u."group"`. Les requêtes de l'apport partenaire
+(AOP 8.2.x) utilisent une colonne `group_id` : selon la version, la colonne de groupe d'`auth_user`
+n'a pas le même nom. Confirme-la avec la requête 0 de `scripts/audit.sql`.
 
 ## Champs de Permission
 
@@ -52,9 +61,25 @@ Le nommage des tables de jointure n'est pas homogène. Exemples relevés :
 | `condition` | Filtre JPQL, `self` désigne l'enregistrement |
 | `conditionParams` | Paramètres positionnels, un `?` par paramètre, séparés par des virgules |
 
+Contrainte (AOP 8.2.3, apport partenaire) : `condition` est limité à 1 024 caractères par la
+validation du bean ; une ligne trop longue échoue à l'import. Détail :
+`permissions-conditionnelles.md`.
+
 Codification usuelle des niveaux : `r`, `re`, `rw`, `rwc`, `rwce`, `rwcd`, `rwcde`.
 Le nom de la permission doit refléter son contenu : un objet nommé `.r` qui autorise la suppression
 est un mensonge qui se paiera lors du prochain audit.
+
+## Règles de champ (MetaPermissionRule)
+
+| Champ | Notes |
+|---|---|
+| `field` | Nom du champ restreint, une règle par champ |
+| `canRead`, `canWrite`, `canExport` | Une règle `canRead = false` masque le champ, quelle que soit la permission objet |
+| `hideIf`, `readonlyIf` | Expressions Groovy : états conditionnels de l'interface |
+
+`meta_permission.active = true` est obligatoire pour que les règles s'appliquent. Les règles ne
+s'additionnent pas : la première meta permission active trouvée l'emporte (utilisateur, groupe,
+rôles de l'utilisateur, rôles du groupe ; voir `moteur-evaluation.md`, section 11).
 
 ## Côtés propriétaires des M2M
 

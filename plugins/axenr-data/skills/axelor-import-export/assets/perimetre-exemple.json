@@ -1,0 +1,290 @@
+{
+ "_doc": "Périmètre d'un paquet data-init — structure du cas prouvé le 25/09/2026 (AOS 9.1.6 / AOP EE 8.2.3, 15 modèles, plus de 1 700 fiches), identifiants du client remplacés par des gabarits <…>. Chemins relatifs au fichier.",
+ "application": "<nom-de-l-application>",
+ "contexte": {
+  "tiers": {
+   "csv": "tiers.csv",
+   "colonne": "importId"
+  }
+ },
+ "cles_cibles": {
+  "com.axelor.apps.base.db.Company": "code",
+  "com.axelor.apps.base.db.Currency": "codeISO",
+  "com.axelor.apps.base.db.Country": "alpha2Code",
+  "com.axelor.apps.base.db.Localization": "code",
+  "com.axelor.apps.base.db.Language": "code",
+  "com.axelor.auth.db.Group": "code",
+  "com.axelor.auth.db.Role": "name",
+  "com.axelor.auth.db.Permission": "name",
+  "com.axelor.auth.db.User": "code",
+  "com.axelor.meta.db.MetaMenu": "name",
+  "com.axelor.meta.db.MetaView": "name",
+  "com.axelor.meta.db.MetaPermission": "name",
+  "com.axelor.apps.base.db.Unit": "importId",
+  "com.axelor.apps.base.db.ProductCategory": "code",
+  "com.axelor.apps.base.db.ProductFamily": "code",
+  "com.axelor.apps.base.db.BarcodeTypeConfig": "name",
+  "com.axelor.apps.base.db.MainActivity": "code",
+  "com.axelor.apps.account.db.PaymentMode": "code",
+  "com.axelor.apps.base.db.PrintingSettings": "name",
+  "com.axelor.apps.base.db.PrintingTemplate": "importId",
+  "com.axelor.apps.base.db.Sequence": "code",
+  "com.axelor.message.db.EmailAddress": "address",
+  "com.axelor.apps.base.db.TradingName": "importId",
+  "com.axelor.apps.base.db.City": "importId",
+  "com.axelor.apps.base.db.Address": "importId",
+  "com.axelor.apps.base.db.Partner": "importId"
+ },
+ "modeles": [
+  {
+   "nom": "PrintingSettings",
+   "type": "com.axelor.apps.base.db.PrintingSettings",
+   "cle": "name",
+   "domaine": "self.id IN (SELECT c.printingSettings.id FROM Company c WHERE c.importId = '1')",
+   "table": "base_printing_settings",
+   "filtre_sql": "name = 'Default print settings'"
+  },
+  {
+   "nom": "Company",
+   "type": "com.axelor.apps.base.db.Company",
+   "cle": "importId",
+   "domaine": "self.importId = '1'",
+   "table": "base_company",
+   "filtre_sql": "import_id = '1'",
+   "non_ecrits": [
+    "accountConfig",
+    "address",
+    "bankPaymentConfig",
+    "businessProjectConfig",
+    "crmConfig",
+    "darkLogo",
+    "defaultBankDetails",
+    "hrConfig",
+    "interventionConfig",
+    "lightLogo",
+    "logo",
+    "partner",
+    "productionConfig",
+    "projectConfig",
+    "publicHolidayEventsPlanning",
+    "purchaseConfig",
+    "qualityConfig",
+    "saleConfig",
+    "salesChannelsConfig",
+    "stockConfig",
+    "supplyChainConfig",
+    "weeklyPlanning"
+   ],
+   "pourquoi_non_ecrits": "décision « identité seule » : configurations et fiches liées issues de la démo"
+  },
+  {
+   "nom": "TradingName",
+   "type": "com.axelor.apps.base.db.TradingName",
+   "cle": "importId",
+   "domaine": "self.importId LIKE 'client:trading-name:%'",
+   "table": "base_trading_name",
+   "filtre_sql": "import_id LIKE 'client:trading-name:%'"
+  },
+  {
+   "nom": "City",
+   "type": "com.axelor.apps.base.db.City",
+   "cle": "importId",
+   "domaine": "self.importId LIKE 'client:city:%'",
+   "table": "base_city",
+   "filtre_sql": "import_id LIKE 'client:city:%'"
+  },
+  {
+   "nom": "Address",
+   "type": "com.axelor.apps.base.db.Address",
+   "cle": "importId",
+   "domaine": "self.importId LIKE 'client:address:%'",
+   "table": "base_address",
+   "filtre_sql": "import_id LIKE 'client:address:%'"
+  },
+  {
+   "nom": "MainActivity",
+   "type": "com.axelor.apps.base.db.MainActivity",
+   "cle": "code",
+   "recherche": "self.code = :code",
+   "domaine": "self.id IN (SELECT p.mainActivity.id FROM Partner p WHERE p.importId IN (:tiers))",
+   "table": "base_main_activity",
+   "filtre_sql": "id IN (SELECT main_activity FROM base_partner WHERE partner_seq ~ '^(T0|<PREFIXE-TIERS>)')",
+   "non_ecrits": [
+    "fullName"
+   ],
+   "pourquoi_non_ecrits": "calculé par MainActivityListener"
+  },
+  {
+   "nom": "PaymentMode",
+   "type": "com.axelor.apps.account.db.PaymentMode",
+   "cle": "code",
+   "recherche": "self.code = :code",
+   "domaine": "self.id IN (SELECT p.outPaymentMode.id FROM Partner p WHERE p.importId IN (:tiers)) OR self.id IN (SELECT p.inPaymentMode.id FROM Partner p WHERE p.importId IN (:tiers))",
+   "table": "account_payment_mode",
+   "filtre_sql": "code IN ('<CODE1>', '<CODE2>')"
+  },
+  {
+   "nom": "EmailAddress",
+   "type": "com.axelor.message.db.EmailAddress",
+   "cle": "importId",
+   "domaine": "self.importId LIKE 'client:email-address:%'",
+   "table": "message_email_address",
+   "filtre_sql": "import_id LIKE 'client:email-address:%'",
+   "non_ecrits": [
+    "partner"
+   ],
+   "pourquoi_non_ecrits": "côté inverse (mappedBy) : posé par Partner.emailAddress"
+  },
+  {
+   "nom": "Partner",
+   "type": "com.axelor.apps.base.db.Partner",
+   "cle": "importId",
+   "domaine": "self.importId IN (:tiers)",
+   "table": "base_partner",
+   "filtre_sql": "partner_seq ~ '^(T0|<PREFIXE-TIERS>)' AND import_id IS NOT NULL"
+  },
+  {
+   "nom": "PartnerAddress",
+   "type": "com.axelor.apps.base.db.PartnerAddress",
+   "cle": "importId",
+   "domaine": "self.importId LIKE 'client:partner-address:%'",
+   "table": "base_partner_address",
+   "filtre_sql": "import_id LIKE 'client:partner-address:%'"
+  },
+  {
+   "nom": "Unit",
+   "type": "com.axelor.apps.base.db.Unit",
+   "cle": "importId",
+   "domaine": "self.importId LIKE 'client:unit:%' OR self.importId IN ('2', '8', '403')",
+   "table": "base_unit",
+   "filtre_sql": "import_id LIKE 'client:unit:%' OR import_id IN ('2', '8', '403')"
+  },
+  {
+   "nom": "ProductCategory",
+   "type": "com.axelor.apps.base.db.ProductCategory",
+   "cle": "code",
+   "recherche": "self.importId = :importId",
+   "domaine": "self.code LIKE '<PREFIXE>-%'",
+   "table": "base_product_category",
+   "filtre_sql": "code LIKE '<PREFIXE>-%'"
+  },
+  {
+   "nom": "Product",
+   "type": "com.axelor.apps.base.db.Product",
+   "cle": "importId",
+   "domaine": "self.importId LIKE 'CLIENT-ART-%'",
+   "table": "base_product",
+   "filtre_sql": "import_id LIKE 'CLIENT-ART-%'",
+   "non_ecrits": [
+    "barCode"
+   ],
+   "pourquoi_non_ecrits": "génération des codes-barres désactivée (décision)"
+  },
+  {
+   "nom": "Group",
+   "type": "com.axelor.auth.db.Group",
+   "cle": "code",
+   "recherche": "self.code = :code",
+   "domaine": "self.code IN ('admins', 'users', 'OPS', 'CST')",
+   "table": "auth_group",
+   "filtre_sql": "code IN ('users', 'CST', 'OPS')",
+   "non_ecrits": [
+    "roles",
+    "menus",
+    "permissions",
+    "metaPermissions",
+    "views"
+   ],
+   "lignes_exclues": [
+    "admins"
+   ],
+   "pourquoi_non_ecrits": "groupes sans rôle (décision) ; admins créé par la plateforme"
+  },
+  {
+   "nom": "User",
+   "type": "com.axelor.auth.db.User",
+   "cle": "importId",
+   "recherche": "self.code = :code",
+   "domaine": "self.importId LIKE 'CLIENT-USR-%'",
+   "table": "auth_user",
+   "filtre_sql": "import_id LIKE 'CLIENT-USR-%'"
+  }
+ ],
+ "ordre_paquet": [
+  "PrintingSettings",
+  "Company",
+  "TradingName",
+  "City",
+  "Address",
+  "MainActivity",
+  "PaymentMode",
+  "EmailAddress",
+  "Partner",
+  "PartnerAddress",
+  "Unit",
+  "ProductCategory",
+  "Product",
+  "Group",
+  "User"
+ ],
+ "tables_liaison": [
+  "base_partner_company_set",
+  "base_partner_trading_name_set",
+  "auth_user_company_set"
+ ],
+ "base_neuve": {
+  "com.axelor.apps.base.db.Localization|code": [
+   "fr_FR"
+  ],
+  "com.axelor.apps.base.db.Currency|codeISO": [
+   "EUR"
+  ],
+  "com.axelor.apps.base.db.Country|alpha2Code": [
+   "FR"
+  ],
+  "com.axelor.apps.base.db.BarcodeTypeConfig|name": [
+   "QR_CODE"
+  ],
+  "com.axelor.apps.base.db.ProductFamily|code": [
+   "BTP-MAT"
+  ],
+  "com.axelor.apps.base.db.PrintingTemplate|importId": [
+   "1"
+  ],
+  "com.axelor.apps.bankpayment.db.BankOrderFileFormat|importId": [
+   "4"
+  ],
+  "com.axelor.auth.db.Group|code": [
+   "admins"
+  ]
+ },
+ "sonde": {
+  "garder": {
+   "Partner": [
+    "<clé tiers fournisseur avec e-mail>",
+    "<clé tiers client avec NAF et 2 enseignes>"
+   ],
+   "Product": [
+    "CLIENT-ART-<code article à prix >= 1 000>"
+   ],
+   "User": [
+    "CLIENT-USR-<identifiant bloqué avec groupe et enseigne>"
+   ],
+   "TradingName": [
+    "*"
+   ],
+   "Company": [
+    "*"
+   ],
+   "PrintingSettings": [
+    "*"
+   ]
+  },
+  "enfants": {
+   "PartnerAddress": {
+    "champ": "partner",
+    "parent": "Partner"
+   }
+  }
+ }
+}

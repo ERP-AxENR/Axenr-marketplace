@@ -1,13 +1,13 @@
 {
   "name": "axenr-data",
-  "version": "2.0.0",
-  "description": "Donnees AxENR : imports et exports Axelor, templates Word XDocReport, architecture BI Superset.",
+  "version": "2.1.0",
+  "description": "Donnees AxENR : imports et exports Axelor (import classique, edition entreprise, data-init), donnees de demo, templates Word (XDocReport et Carbone), modeles de mail Axelor, architecture BI Superset.",
   "author": {
     "name": "AxENR",
     "email": "f.benomar@erp-axenr.fr"
   },
-  "homepage": "https://github.com/fbe-axenr/Axenr-marketplace",
-  "repository": "https://github.com/fbe-axenr/Axenr-marketplace",
+  "homepage": "https://github.com/ERP-AxENR/Axenr-marketplace",
+  "repository": "https://github.com/ERP-AxENR/Axenr-marketplace",
   "keywords": [
     "axenr",
     "import",

@@ -9,7 +9,7 @@ Expert senior en templates Word XDocReport pour Axelor / AxENR. Travaille **en l
 ### Creation pure (depuis besoin seul)
 
 ```
-/axenr-template-expert cree un mandat ENEDIS pour Systeko
+/axenr-template-expert cree un mandat ENEDIS pour <client>
 /axenr-template-expert cree une fiche de collecte avec : nom projet, adresse chantier, SIRET client, puissance kWc
 /axenr-template-expert genere un contrat de maintenance type base sur la racine Contract
 ```
@@ -17,21 +17,29 @@ Expert senior en templates Word XDocReport pour Axelor / AxENR. Travaille **en l
 ### Modification d'un template existant
 
 ```
-/axenr-template-expert convertis "SAS L'HORIZON SOLAIRE" en champ dynamique dans ce template | ~/Downloads/contrat-m26-015.docx
-/axenr-template-expert ajoute une boucle sur les equipements | ~/Downloads/template-planete.docx
+/axenr-template-expert convertis "SAS EXEMPLE SOLAIRE" en champ dynamique dans ce template | ~/Downloads/contrat-maintenance.docx
+/axenr-template-expert ajoute une boucle sur les equipements | ~/Downloads/template-client.docx
 /axenr-template-expert dynamise ces zones [SIRET] [adresse siege] [date] | ~/Downloads/mandat.docx
 ```
 
 ### Avec export TemplateSettingsLine client (source de verite)
 
 ```
-/axenr-template-expert cree un CARD-I BT pour Systeko | ~/Downloads/card-i-brut.docx | ~/Downloads/export-templatesettingsline-systeko.xlsx
+/axenr-template-expert cree un CARD-I BT pour <client> | ~/Downloads/card-i-brut.docx | ~/Downloads/export-templatesettingsline-<client>.xlsx
 ```
 
 ### Debug d'un champ qui revient vide
 
 ```
 /axenr-template-expert le champ {d.clientPartner.mainAddress.city.fullName} est vide dans mes renditions
+```
+
+### Debug sous Carbone (images, boucles)
+
+```
+/axenr-template-expert le log dit "Carbone (850ms)" et les photos du rapport d'intervention sortent grises | ~/Downloads/rapport-preventif.docx
+/axenr-template-expert la boucle des non-conformites disparait depuis que j'ai ajoute un filtre Groovy
+/axenr-template-expert "Cannot store template : InvalidPart" a l'import de mon .docx
 ```
 
 ## PARSING DES ARGUMENTS
@@ -41,7 +49,7 @@ Format : `<besoin libre>` [`|` `<chemin-docx>`] [`|` `<chemin-xlsx-TemplateSetti
 Le caractere `|` separe les parties. Exemple :
 
 ```
-/axenr-template-expert convertis ces zones en champs dynamiques | /Users/macbook/Downloads/mandat.docx | /Users/macbook/Downloads/export-tsl.xlsx
+/axenr-template-expert convertis ces zones en champs dynamiques | ~/Downloads/mandat.docx | ~/Downloads/export-tsl.xlsx
 ```
 
 Si un seul chemin est fourni :
@@ -50,31 +58,18 @@ Si un seul chemin est fourni :
 
 ## DETECTION AUTOMATIQUE DU CLIENT
 
-L'agent detecte d'abord le client AxENR sur lequel tu travailles, a partir de ton `cwd` :
-
-| cwd | Client detecte |
-|-----|----------------|
-| `~/Desktop/Projects/systeko-app` | Systeko |
-| `~/Desktop/Projects/planeteenr-app` | Planete ENR |
-| `~/Desktop/Projects/emeraude-solaire-app` | Emeraude Solaire |
-| `~/Desktop/Projects/axenr-app` | AxENR (interne) |
-| `~/Desktop/Projects/synambu` | Synambu |
-| `~/Desktop/Projects/energ-ia` | Energ-IA |
-| `~/Desktop/Projects/yooz` | Yooz |
-| Autre | Demandera explicitement |
-
-Le client detecte determine :
+L'agent detecte d'abord le client AxENR a partir du `cwd`, avec le skill `client-context-detector` (table des dossiers client et des ressources). Le client detecte determine :
 - Quel export TemplateSettingsLine charger (`~/Downloads/export-tsl-<client>.xlsx` ou equivalent)
+- Quel moteur attendre (XDocReport ou Carbone), a confirmer par le log de previsualisation
 - Quelles conventions de nommage utiliser pour le livrable (`<Type>_<Client>_V<N>.docx`)
-- Quelle racine privilegier selon les templates existants du client
 
 Lance l'agent **depuis le dossier du client** pour beneficier de la detection automatique :
 
 ```bash
-cd ~/Desktop/Projects/systeko-app
+cd ~/Desktop/Projects/<client>-app
 /axenr-template-expert cree un mandat ENEDIS
-# -> client = Systeko detecte automatiquement
-# -> livrable : ~/Downloads/Mandat_ENEDIS_Systeko_V1.docx
+# -> client detecte automatiquement
+# -> livrable : ~/Downloads/Mandat_ENEDIS_<Client>_V1.docx
 ```
 
 Si tu es ailleurs, l'agent demandera le client explicitement.
@@ -98,11 +93,10 @@ L'agent deduit la racine probable selon les mots-cles du besoin :
 L'agent lit obligatoirement au debut de chaque tache :
 
 1. Catalogue des champs dynamiques (xlsx) :
-   - Defaut : `/Users/macbook/Downloads/Champs_dynamiques_templates (2).xlsx`
+   - Emplacement fourni par l'utilisateur (ou catalogue vivant Google Sheets du client)
    - Si absent : demander a l'utilisateur
 2. Export TemplateSettingsLine (xlsx) - si fourni ou trouvable :
-   - Defaut : `/Users/macbook/Downloads/export-18305243113295820288.xlsx` (Planete/Emeraude)
-   - L'utilisateur peut pointer vers l'export frais d'un autre client (Systeko, etc.)
+   - Export frais de l'instance concernee ; un export ne vaut que pour l'instance dont il provient
 
 ### Etape 2 : Deleguer a l'agent
 

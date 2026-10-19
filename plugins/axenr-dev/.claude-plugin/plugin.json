@@ -1,13 +1,13 @@
 {
   "name": "axenr-dev",
-  "version": "2.0.0",
-  "description": "Developpement AxENR (Claude Code) : resolution de tickets auto-apprenante, revue de PR, montee de version, lecons partagees, outillage de la marketplace et integration hebdomadaire des notes d'amelioration.",
+  "version": "2.1.0",
+  "description": "Developpement AxENR (Claude Code) : resolution de tickets auto-apprenante, revue de PR, montee de version, environnements Axelor jetables, connecteurs vers des outils tiers, lecons partagees, outillage de la marketplace et integration hebdomadaire des notes d'amelioration.",
   "author": {
     "name": "AxENR",
     "email": "f.benomar@erp-axenr.fr"
   },
-  "homepage": "https://github.com/fbe-axenr/Axenr-marketplace",
-  "repository": "https://github.com/fbe-axenr/Axenr-marketplace",
+  "homepage": "https://github.com/ERP-AxENR/Axenr-marketplace",
+  "repository": "https://github.com/ERP-AxENR/Axenr-marketplace",
   "keywords": [
     "axenr",
     "dev",

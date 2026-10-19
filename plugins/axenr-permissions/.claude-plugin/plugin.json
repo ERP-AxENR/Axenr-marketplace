@@ -1,13 +1,13 @@
 {
   "name": "axenr-permissions",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Droits et permissions Axelor pour AxENR : conception de matrice, fichier d'import, audit et diagnostic des refus d'acces.",
   "author": {
     "name": "AxENR",
     "email": "f.benomar@erp-axenr.fr"
   },
-  "homepage": "https://github.com/fbe-axenr/Axenr-marketplace",
-  "repository": "https://github.com/fbe-axenr/Axenr-marketplace",
+  "homepage": "https://github.com/ERP-AxENR/Axenr-marketplace",
+  "repository": "https://github.com/ERP-AxENR/Axenr-marketplace",
   "keywords": [
     "axenr",
     "droits",

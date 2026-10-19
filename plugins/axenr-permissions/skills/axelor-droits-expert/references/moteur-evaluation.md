@@ -241,3 +241,97 @@ et se reconnecter** pour que le changement s'applique. Un test réalisé sans re
 
 À instruire si le besoin se présente : localiser le cache de session et savoir s'il existe un moyen
 de l'invalider sans reconnexion.
+
+---
+
+## 11. Compléments AOP 8.2.3
+
+> Apport d'un chef de projet Axelor (paquet du 15/10/2026). Lu dans le code d'AOP 8.2.3 / AOS 9.1.6
+> et vérifié sur instance. AxENR tourne sur AOP 7.4 / AOS 8.x : à vérifier sur la version cible.
+> Les numéros de ligne des sections 1 à 10 portent sur 7.4.13 ; en 8.2.3, l'apport relève
+> `MenuChecker.isAllowed` ligne 56, `canShow` ligne 96, `AuthUtils.isAdmin` ligne 108,
+> `AuthResolver.resolve` ligne 98, `AuthSecurity.getFilter` ligne 116 et `isPermitted` ligne 153.
+> Repère chaque règle par classe et méthode, pas par numéro de ligne.
+
+### Ce qui concorde avec les sections 1 à 10
+
+Les quatre règles de visibilité des menus, le court-circuit `admin` / `admins`, l'union des quatre
+sources de permissions, le joker calculé depuis l'objet, `canShow` (`hidden`, `moduleToCheck`,
+`conditionToCheck`) : identiques en 8.2.3. L'apport ajoute un cas rare : un menu dont le champ
+`user` est renseigné n'est visible que de cet utilisateur.
+
+### Nuance sur la règle d'or 4
+
+Elle vaut pour le contrôle d'un enregistrement. Pour les listes, `getFilter` combine quand même
+les permissions conditionnées par OU, même en présence d'une permission sans condition : la liste
+peut se retrouver **restreinte**. Détail et formes sûres : `permissions-conditionnelles.md`.
+
+### Nuance sur la règle d'or 10
+
+L'apport constate qu'en 8.2.3 l'utilisateur courant est relu à chaque requête
+(`AuthUtils.getUser`) : une modification faite par l'application s'appliquerait à la requête
+suivante (non mesuré), et le vrai piège est le cache Hibernate après une modification en SQL. La
+règle 10 reste en place tant qu'elle n'est pas instruite dans le code de la version cible.
+Pratique retenue : `diagnostic.md`, « Caches et reconnexion ».
+
+### Les valeurs imbriquées d'un enregistrement
+
+`Resource.save` contrôle l'enregistrement principal (création sans identifiant, écriture avec) et
+chaque valeur imbriquée de la charge utile (`checkRelationalPermissions`) :
+
+| Valeur imbriquée envoyée | Contrôle sur le modèle cible |
+|---|---|
+| Sans identifiant (éditeur en ligne, `canNew`, nouvelle ligne O2M) | Création |
+| Identifiant + `version` (enregistrement modifié sur place) | Écriture sur cet identifiant |
+| Identifiant seul | Aucun : simple référence |
+
+Observé avec le client web AOP 8.2.3 : une valeur imbriquée existante voyage **sans** version (une
+taxe de ligne `{id, name, selected}`, une ville `{id, fullName}`), donc sans contrôle d'écriture.
+Le « + » d'un champ lien (nouvelle ville, nouvelle adresse) enregistre son enregistrement seul,
+avant le parent.
+
+Deux réglages transforment ces refus, et ceux des actions, en simples avertissements :
+`application.permission.disable-relational-field` et `application.permission.disable-action`
+(défaut `false`). Un bundle qui marche sur une instance et échoue sur l'autre : compare d'abord
+ces deux réglages.
+
+### Les actions contrôlent leur modèle
+
+Chaque action nommée contrôle la lecture sur son `model`, ou sur le modèle du contexte quand elle
+n'en déclare pas, et sur l'enregistrement lui-même quand le contexte a un identifiant
+(`Action.checkPermission`, `ActionHandler.checkPermission`). Une `action-record` qui écrit de vrais
+champs contrôle la création (pas d'identifiant) ou l'écriture. Exemptées : les actions sur
+`MetaAction` ou `MetaFilter`, et les `action-view` sur `MailMessage`.
+
+### Les règles de champ ne s'additionnent pas
+
+Contrairement aux permissions objet, `MetaPermissions.find` prend la **première** meta permission
+active qui porte une règle pour le champ, dans cet ordre : utilisateur, groupe, rôles de
+l'utilisateur, rôles du groupe. Une règle posée sur l'utilisateur ou le groupe masque celles des
+rôles. Raison de plus pour tout poser sur le rôle.
+
+### Champs protégés de la fiche utilisateur
+
+Pour tout utilisateur qui n'est pas `admin` / `admins`, `Resource.save` refuse une charge utile
+`User` (création ou mise à jour, sa propre fiche ou non) contenant `code`, `group`, `blocked`,
+`activateOn`, `expiresOn`, `password`, `passwordUpdatedOn`, `roles`, `permissions` ou
+`metaPermissions` (`USER_RESTRICTED_FIELDS`), quelles que soient les permissions sur
+`com.axelor.auth.db.*`. Un « administrateur délégué » hors `admins` peut modifier les champs
+ordinaires, mais ne peut ni créer un compte (`code` est obligatoire), ni changer un groupe ou des
+rôles, ni bloquer / débloquer, ni saisir un mot de passe. La garde n'existe que dans
+`Resource.save` : services et batchs écrivent `User` directement. Seul chemin trouvé hors
+`admins` : le batch AOS « Changement de mot de passe » (`BatchPasswordChange`), soumis aux seules
+permissions sur `BaseBatch`. `forcePasswordChange` n'est pas protégé.
+
+Changement de mot de passe : `UserController.changePassword` (AOP) accepte son propre compte, ou
+tout compte pour un admin ; la lecture sur `User` suffit. Sur AOS 9.1.6, le formulaire Préférences
+effectif n'a pas le bouton : le chemin sans permission est `forcePasswordChange = true`, qui fait
+demander un nouveau mot de passe à la connexion (`AxelorAuthenticator`).
+
+### `technicalStaff` en 8.2.3
+
+Ni `MenuChecker` ni `AuthSecurity` ne le lisent : seul `admin` / `admins` contourne. Usages relevés
+(AOP 8.2.3 / AOS 9.1.6) : détails d'erreur affichés, exécution d'une requête non enregistrée,
+données techniques dans À propos, accès à l'observabilité, et, avec `viewCustomizationPermission`
+et le réglage Studio, le bouton « Ouvrir Studio » sur les vues. Aucun ne contourne les droits.
+Concorde avec la section 8.
