@@ -54,6 +54,7 @@ claude.ai, Cowork et Claude Code). Agents et commandes : axenr-dev seulement.
 | error-learner, lesson-deduplicator, knowledge-updater, pre-flight-checker | skills | axenr-dev | Systeme de lecons (curator model) |
 | axenr-dev-validator, migration-validator | skills | axenr-dev | Validations dev et migrations |
 | marketplace-doctor | skill | axenr-dev | Audit de sante de la marketplace |
+| security-audit | skill | axenr-dev | Audit de securite d un codebase (skill Cloudflare vendore, MIT) : reconnaissance, chasse guidee par couverture, validation adversariale, rapport |
 | weekly-skill-integration | skill | axenr-dev | « Integre les notes de la semaine » : fiches Jira -> PR hebdomadaire |
 | provisioning-axelor-environments | skill | axenr-dev | Environnements Axelor isoles ou assembles de zero, sondes, audit de derive |
 | building-axelor-integrations | skill | axenr-dev | Connecteurs Axelor vers outils tiers : cadrage, emulateur, client REST, chiffrage |
